@@ -66,3 +66,184 @@ data:
     rdT6opvvn/Ox8Dv+7ujRTrabPNOBS2XzEnWk
     -----END CERTIFICATE-----
 ========================================================================
+install Cluster Observability Operator
+========================================================================
+# oc -n openshift-logging patch clusterlogging/instance -p '{"spec":{"managementState": "Unmanaged"}}' --type=merge
+# oc -n openshift-logging patch elasticsearch/elasticsearch -p '{"metadata":{"ownerReferences": []}}' --type=merge
+# oc -n openshift-logging patch kibana/kibana -p '{"metadata":{"ownerReferences": []}}' --type=merge
+# oc -n openshift-logging get elasticsearch elasticsearch -o yaml   | yq -r 'del(.status,.metadata | .resourceVersion,.uid,.generation,.creationTimestamp,.selfLink)'  > /tmp/cr-elasticsearch.yaml
+# oc -n openshift-logging get elasticsearch elasticsearch -o yaml   > /tmp/cr-elasticsearch.yaml
+# oc -n openshift-logging get kibana kibana -o yaml > /tmp/cr-kibana.yaml
+# oc -n openshift-logging  get kibana
+# oc project openshift-marketplace
+# oc get pods
+# oc get clf -A
+#  vi sa.yaml
+[pnbone@retdrbastion loki_config]$ cat sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: logging-collector
+  namespace: openshift-logging
+[pnbone@retdrbastion loki_config]$
+# oc apply -f sa.yaml
+# vi rbac.yml
+[pnbone@retdrbastion loki_config]$ cat rbac.yml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: logging-collector:write-logs
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: logging-collector-logs-writer
+subjects:
+- kind: ServiceAccount
+  name: logging-collector
+  namespace: openshift-logging
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: logging-collector:collect-application
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: collect-application-logs
+subjects:
+- kind: ServiceAccount
+  name: logging-collector
+  namespace: openshift-logging
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+ name: logging-collector:collect-infrastructure
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: collect-infrastructure-logs
+subjects:
+- kind: ServiceAccount
+  name: logging-collector
+  namespace: openshift-logging
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: logging-collector:collect-audit
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: collect-audit-logs
+subjects:
+- kind: ServiceAccount
+  name: logging-collector
+  namespace: openshift-logging
+[pnbone@retdrbastion loki_config]$
+# oc apply -f rbac.yml
+# oc delete clf instance
+# vi clf.yaml
+[pnbone@retdrbastion loki_config]$ cat clf.yaml
+apiVersion: "observability.openshift.io/v1"
+kind: ClusterLogForwarder
+metadata:
+  name: logging
+  namespace: openshift-logging
+spec:
+  managementState: Managed
+  serviceAccount:
+    name: logging-collector
+  inputs:
+    - application:
+            includes:
+        - namespace: dr
+      name: my-app-logs
+        - application:
+            includes:
+        - namespace: dr
+      name: my-app-logs-es
+  outputs:
+  - name: siem-one-dr
+    syslog:
+      facility: local0
+      payloadKey: message
+      rfc: RFC5424
+      severity: informational
+          url: 'udp://10.192.231.221:514'
+    type: syslog
+  - name: rsyslog-server1
+    syslog:
+      facility: local0
+      payloadKey: message
+      rfc: RFC5424
+      severity: informational
+          url: 'udp://10.209.7.89:514'
+    type: syslog
+  - name: default-lokistack
+    type: lokiStack
+    lokiStack:
+      target:
+        name: logging-loki
+        namespace: openshift-logging
+      authentication:
+        token:
+          from: serviceAccount
+    tls:
+      ca:
+        key: service-ca.crt
+        configMapName: openshift-service-ca.crt
+  filters:
+  - name: labels
+    type: openshiftLabels
+    openshiftLabels:
+      syslog: siem-one-dr
+  - name: rsyslog-server1-labels
+    type: openshiftLabels
+    openshiftLabels:
+      syslog: rsyslog-server1
+  pipelines:
+    - inputRefs:
+        - my-app-logs-es
+      name: forward-to-loki
+      outputRefs:
+        - default-lokistack
+        - name: infra-logs
+          inputRefs:
+        - application
+        - infrastructure
+                - audit
+      outputRefs:
+        - default-lokistack
+    - inputRefs:
+        - infrastructure
+        - application
+        - audit
+      filterRefs:
+      - labels
+      name: dr-siem-one
+      outputRefs:
+        - siem-one-dr
+    - inputRefs:
+        - my-app-logs
+      filterRefs:
+      - rsyslog-server1-labels
+      name: dr-siem-one
+      outputRefs:
+        - rsyslog-server1
+[pnbone@retdrbastion loki_config]$
+# oc apply -f  clf.yaml
+# vi logging.yaml   ============>need to check by akhil(having yaml of ui plugin)
+apiVersion: observability.openshift.io/v1alpha1
+kind: UIPlugin
+metadata:
+  name: logging
+  annotations:
+    observability.openshift.io/api-support: GeneralAvailability
+  finalizers:
+    - uiplugin.observability.openshift.io/finalizer
+spec:
+  logging: {}
+  type: Logging
+
+
