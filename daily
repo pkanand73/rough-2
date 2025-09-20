@@ -1,0 +1,53 @@
+[pnbone@retdrbastion ~]$ nmap --script ssl-enum-ciphers -p 443 pnbone-prod-retail.hcpdc.obc.co.in  -Pn
+Starting Nmap 7.92 ( https://nmap.org ) at 2025-09-20 12:37 IST
+Nmap scan report for pnbone-prod-retail.hcpdc.obc.co.in (10.209.19.87)
+Host is up (0.0017s latency).
+Other addresses for pnbone-prod-retail.hcpdc.obc.co.in (not scanned): 10.209.19.84 10.209.19.85 10.209.19.86
+rDNS record for 10.209.19.87: dr-retail-prod.dr-pnbone-prod-retail.hcpdc.obc.co.in
+
+PORT    STATE SERVICE
+443/tcp open  https
+| ssl-enum-ciphers:
+|   TLSv1.2:
+|     ciphers:
+|       TLS_DHE_RSA_WITH_AES_256_CBC_SHA (dh 2048) - A
+|       TLS_DHE_RSA_WITH_AES_128_CBC_SHA (dh 2048) - A
+|       TLS_RSA_WITH_AES_128_CBC_SHA (rsa 2048) - A
+|       TLS_RSA_WITH_AES_256_CBC_SHA (rsa 2048) - A
+|     compressors:
+|       NULL
+|     cipher preference: server
+|   TLSv1.3:
+|     ciphers:
+|       TLS_AKE_WITH_AES_128_GCM_SHA256 (secp256r1) - A
+|     cipher preference: indeterminate
+|     cipher preference error: Too few ciphers supported
+|_  least strength: A
+
+Nmap done: 1 IP address (1 host up) scanned in 0.30 seconds
+[pnbone@retdrbastion ~]$
+
+[pnbone@retdcbastion busy]$ nmap --script ssl-enum-ciphers -p 443 pnbone-01.hcpdr.obc.co.in -Pn
+Starting Nmap 7.92 ( https://nmap.org ) at 2025-09-20 12:32 IST
+Nmap scan report for pnbone-01.hcpdr.obc.co.in (10.192.30.191)
+Host is up (0.0044s latency).
+Other addresses for pnbone-01.hcpdr.obc.co.in (not scanned): 10.192.30.194 10.192.30.193 10.192.30.192
+rDNS record for 10.192.30.191: *.hcpdr.obc.co.in
+
+PORT    STATE SERVICE
+443/tcp open  https
+| ssl-enum-ciphers:
+|   TLSv1.2:
+|     ciphers:
+|       TLS_DHE_RSA_WITH_AES_256_CBC_SHA (dh 2048) - A
+|       TLS_DHE_RSA_WITH_AES_128_CBC_SHA (dh 2048) - A
+|       TLS_RSA_WITH_AES_128_CBC_SHA (rsa 2048) - A
+|       TLS_RSA_WITH_AES_256_CBC_SHA (rsa 2048) - A
+|     compressors:
+|       NULL
+|     cipher preference: server
+|_  least strength: A
+
+Nmap done: 1 IP address (1 host up) scanned in 0.50 seconds
+[pnbone@retdcbastion busy]$
+                    
