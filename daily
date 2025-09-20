@@ -53,4 +53,18 @@ Nmap done: 1 IP address (1 host up) scanned in 0.50 seconds
 
 =================================================================
 https://access.redhat.com/articles/5348961
+=================================================================
+
+
+Port 10250 is used by the Kubelet in Kubernetes for internal API communication. It typically serves:
+
+Health checks
+
+Pod logs
+
+Exec and attach commands
+
+Metrics and status queries
+
+This traffic is not browser-based, and HSTS (HTTP Strict Transport Security) is a browser security feature. HSTS only applies to HTTPS web traffic accessed via browsers — not to internal service-to-service communication over TCP or REST APIs used by Kubernetes components.
                     
