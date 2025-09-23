@@ -1,0 +1,492 @@
+Using username "pnbone".
+Pre-authentication banner message from server:
+|
+|
+|                 ....Punjab National Bank....
+|
+|
+| ########## THIS IS A PRIVATE COMPUTER SYSTEM. ###################
+| #################################################################
+|         This system is for the use of authorized users only.
+|         Individuals using this computer system without authority,
+|         or in excess of their authority, are subject to having all
+|         of their activities on this system monitored and recorded
+|         by system personnel.
+|         In the course of monitoring individuals improperly using
+|         this system, or in the course of system maintenance, the
+|         activities of authorized users may also be monitored. By
+|         continuing to use this system you indicate your awareness
+|         of and contsent to these terms and condition to use .
+| #####LOG OFF IMMEDIATELY if you are not the authorize user.######
+|
+|
+|                  ....Punjab National Bank....
+|
+End of banner message from server
+Activate the web console with: systemctl enable --now cockpit.socket
+
+Register this system with Red Hat Insights: insights-client --register
+Create an account or view all your systems at https://red.ht/insights-dashboard
+Last login: Tue Sep 23 10:38:40 2025 from 10.192.18.78
+[pnbone@retdcbastion ~]$ oc get nodes
+NAME                                STATUS   ROLES           AGE     VERSION
+retdcmaster1.retaildc.mypnbone.in   Ready    master,worker   2y88d   v1.29.14+7cf4c05
+retdcmaster2.retaildc.mypnbone.in   Ready    master,worker   2y88d   v1.29.14+7cf4c05
+retdcmaster3.retaildc.mypnbone.in   Ready    master,worker   2y87d   v1.29.14+7cf4c05
+[pnbone@retdcbastion ~]$ oc project openshift-logging
+Now using project "openshift-logging" on server "https://api.retaildc.mypnbone.in:6443".
+[pnbone@retdcbastion ~]$ oc get pods
+NAME                                            READY   STATUS      RESTARTS        AGE
+cluster-logging-operator-57f8888c69-2hkvd       1/1     Running     0               51d
+collector-5nhhn                                 1/1     Running     0               28d
+collector-nzlz4                                 1/1     Running     0               28d
+collector-rnmnr                                 1/1     Running     0               28d
+elasticsearch-cdm-ffi967ib-1-85598974ff-d45t4   2/2     Running     0               3d18h
+elasticsearch-cdm-ffi967ib-2-5bf6d8cb9d-f2fdq   2/2     Running     0               3d18h
+elasticsearch-cdm-ffi967ib-3-58f8c4797-4dr44    2/2     Running     0               3d16h
+elasticsearch-im-app-29310075-jqm8b             0/1     Completed   0               10m
+elasticsearch-im-audit-29310075-r92fg           0/1     Completed   0               10m
+elasticsearch-im-infra-29310075-85bq5           0/1     Completed   0               10m
+kibana-6d6fc5466c-45mvz                         2/2     Running     0               3d23h
+logging-loki-compactor-0                        1/1     Running     816 (19h ago)   3d17h
+logging-loki-distributor-84c6867bb8-rclhm       1/1     Running     0               3d17h
+logging-loki-distributor-84c6867bb8-rv8nt       1/1     Running     0               3d17h
+logging-loki-gateway-6789b8695f-drklr           2/2     Running     0               3d23h
+logging-loki-gateway-6789b8695f-dsvrk           2/2     Running     0               3d23h
+logging-loki-index-gateway-0                    1/1     Running     0               3d17h
+logging-loki-index-gateway-1                    1/1     Running     0               3d17h
+logging-loki-ingester-0                         1/1     Running     0               3d17h
+logging-loki-ingester-1                         1/1     Running     0               3d17h
+logging-loki-ingester-2                         1/1     Running     0               3d17h
+logging-loki-querier-5dd8b9ff74-5hhk6           1/1     Running     0               3d17h
+logging-loki-querier-5dd8b9ff74-lp9nc           1/1     Running     0               3d17h
+logging-loki-querier-5dd8b9ff74-wmj9l           1/1     Running     0               3d17h
+logging-loki-query-frontend-84c4bc8469-2bxhc    1/1     Running     0               3d17h
+logging-loki-query-frontend-84c4bc8469-pglvf    1/1     Running     0               3d17h
+[pnbone@retdcbastion ~]$ oc -n openshift-logging patch clusterlogging/instance -p '{"spec":{"managementState": "Unmanaged"}}' --type=merge
+clusterlogging.logging.openshift.io/instance patched
+[pnbone@retdcbastion ~]$ oc -n openshift-logging patch elasticsearch/elasticsearch -p '{"metadata":{"ownerReferences": []}}' --type=merge
+elasticsearch.logging.openshift.io/elasticsearch patched
+[pnbone@retdcbastion ~]$ oc -n openshift-logging patch kibana/kibana -p '{"metadata":{"ownerReferences": []}}' --type=merge
+kibana.logging.openshift.io/kibana patched
+[pnbone@retdcbastion ~]$ oc -n openshift-logging get elasticsearch elasticsearch -o yaml > /tmp/cr-elasticsearch.yaml
+[pnbone@retdcbastion ~]$ oc -n openshift-logging get kibana kibana -o yaml  > /tmp/cr-kibana.yaml
+[pnbone@retdcbastion ~]$ ll /tmp
+total 251140
+drwx------. 3 ocpretaildc ocpretaildc       24 Jun 28  2023 containers-user-1002
+-rw-rw-r--. 1 pnbone      pnbone          3222 Sep 23 10:58 cr-elasticsearch.yaml
+-rw-rw-r--. 1 pnbone      pnbone           710 Sep 23 10:58 cr-kibana.yaml
+-rw-rw-r--. 1 pnbone      pnbone      36469983 Jun 27 14:19 envoy_access.log.1.gz
+-rw-rw-r--. 1 pnbone      pnbone      36514277 Jun 27 14:15 envoy_access.log.2.gz
+-rw-rw-r--. 1 pnbone      pnbone      36461562 Jun 27 14:15 envoy_access.log.3.gz
+-rw-rw-r--. 1 pnbone      pnbone      36302956 Jun 27 14:15 envoy_access.log.4.gz
+-rw-rw-r--. 1 pnbone      pnbone      36335003 Jun 27 14:14 envoy_access.log.5.gz
+-rw-rw-r--. 1 pnbone      pnbone      36406495 Jun 27 14:14 envoy_access.log.6.gz
+-rw-rw-r--. 1 pnbone      pnbone      36389971 Jun 27 14:04 envoy_access.log.7.gz
+drwxr-xr-x. 2 BMCDISC     BMCDISC            6 Sep 11 02:25 hsperfdata_BMCDISC
+drwxr-xr-x. 2 pnbone      pnbone             6 Sep 12 01:42 hsperfdata_pnbone
+drwxr-xr-x. 2 root        root              21 Sep  8 18:17 hsperfdata_root
+-rw-rw-r--. 1 pnbone      pnbone        774112 Dec  9  2024 inspect.local.3435653034285725998.tar.gz
+-rw-rw-r--. 1 pnbone      pnbone       1418926 Dec  9  2024 inspect.local.5129297336235119161.tar.gz
+-rw-r--r--. 1 root        root             101 Sep  8 18:13 lua_BpK0Kr
+-rw-r--r--. 1 root        root             101 Mar  7  2025 lua_EexQxH
+-rw-r--r--. 1 root        root             101 Dec 10  2024 lua_mRcYoX
+-rw-------. 1 pnbone      pnbone          8781 Sep  1 12:41 oc-edit-2136921978.yaml
+-rw-------. 1 pnbone      pnbone          1134 Apr  7 15:23 oc-edit-2477499049.yaml
+-rw-------. 1 pnbone      pnbone          1134 Apr  7 15:23 oc-edit-2728181006.yaml
+-rw-------. 1 pnbone      pnbone          1329 Apr  7 15:25 oc-edit-2748279882.yaml
+-rw-------. 1 pnbone      pnbone          2237 May  2 18:16 oc-edit-3101186380.yaml
+-rw-------. 1 pnbone      pnbone          1328 Apr  7 15:23 oc-edit-499884504.yaml
+-rw-------. 1 pnbone      pnbone          2474 May  2 18:26 oc-edit-535692693.yaml
+-rw-------. 1 pnbone      pnbone          2353 May  2 18:26 oc-edit-605316703.yaml
+-rw-------. 1 pnbone      pnbone          1328 Apr  7 15:25 oc-edit-702865732.yaml
+-rw-------. 1 pnbone      pnbone          1328 Apr  7 15:23 oc-edit-938894209.yaml
+-rwxr-xr-x. 1 root        root              75 Jan  5  2025 pconfig.cfg
+drwx------. 5 ocpretaildc ocpretaildc       52 Jun 28  2023 podman-run-1002
+-rw-r--r--. 1 root        root            1484 Aug 21 14:07 site_temp.plc
+drwx------. 3 root        root              17 Sep 12 02:15 systemd-private-cd3f0498eeeb4dbf80bfc2156e3a0a39-chronyd.service-V8qAE6
+drwx------. 3 root        root              17 Sep 12 02:15 systemd-private-cd3f0498eeeb4dbf80bfc2156e3a0a39-colord.service-v8qguJ
+drwx------. 3 root        root              17 Sep 12 02:15 systemd-private-cd3f0498eeeb4dbf80bfc2156e3a0a39-ModemManager.service-jKpF9E
+drwx------. 3 root        root              17 Sep 12 02:15 systemd-private-cd3f0498eeeb4dbf80bfc2156e3a0a39-rtkit-daemon.service-x2mdrw
+[pnbone@retdcbastion ~]$ cd loki/
+[pnbone@retdcbastion loki]$ ll
+total 8
+-rw-rw-r--. 1 pnbone pnbone 1474 Sep 19 11:35 configMap.yaml
+-rw-rw-r--. 1 pnbone pnbone 1261 Sep 19 11:59 rootca.crt
+[pnbone@retdcbastion loki]$ vi rbac.yaml
+[pnbone@retdcbastion loki]$ oc get sa
+NAME         SECRETS   AGE
+builder      1         2y78d
+default      1         2y78d
+deployer     1         2y78d
+finacle-sa   1         173d
+graylog-sa   1         170d
+[pnbone@retdcbastion loki]$ oc get cl -oyaml
+apiVersion: v1
+items: []
+kind: List
+metadata:
+  resourceVersion: ""
+[pnbone@retdcbastion loki]$ oc get clf -oyaml
+apiVersion: v1
+items: []
+kind: List
+metadata:
+  resourceVersion: ""
+[pnbone@retdcbastion loki]$ oc project openshift-logging
+Now using project "openshift-logging" on server "https://api.retaildc.mypnbone.in:6443".
+[pnbone@retdcbastion loki]$ oc get cl -oyaml
+apiVersion: v1
+items:
+- apiVersion: logging.openshift.io/v1
+  kind: ClusterLogging
+  metadata:
+    creationTimestamp: "2023-11-18T10:54:00Z"
+    generation: 12
+    name: instance
+    namespace: openshift-logging
+    resourceVersion: "610752637"
+    uid: 17d74fc1-9729-434f-b39f-909947755c64
+  spec:
+    collection:
+      logs:
+        type: vector
+      type: vector
+    logStore:
+      elasticsearch:
+        nodeCount: 3
+        nodeSelector:
+          node-role.kubernetes.io/worker: ""
+        redundancyPolicy: SingleRedundancy
+        resources:
+          limits:
+            cpu: 10000m
+            memory: 48Gi
+          requests:
+            cpu: 10000m
+            memory: 48Gi
+        storage:
+          size: 10Ti
+          storageClassName: sc-hitachi-csi
+      retentionPolicy:
+        application:
+          maxAge: 30d
+        audit:
+          maxAge: 30d
+        infra:
+          maxAge: 30d
+      type: elasticsearch
+    managementState: Unmanaged
+    visualization:
+      kibana:
+        nodeSelector:
+          node-role.kubernetes.io/worker: ""
+        replicas: 1
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 1Gi
+      type: kibana
+  status:
+    collection:
+      logs:
+        fluentdStatus:
+          daemonSet: collector
+          nodes:
+            collector-g7rbm: retdcmaster2.retaildc.mypnbone.in
+            collector-r7fvf: retdcmaster1.retaildc.mypnbone.in
+            collector-w8j48: retdcmaster3.retaildc.mypnbone.in
+          pods:
+            failed: []
+            notReady: []
+            ready:
+            - collector-g7rbm
+            - collector-r7fvf
+            - collector-w8j48
+    conditions:
+    - lastTransitionTime: "2023-11-18T10:54:01Z"
+      status: "False"
+      type: CollectorDeadEnd
+    - lastTransitionTime: "2024-10-03T11:32:08Z"
+      message: spec.collection.logs.* is deprecated in favor of spec.collection.*
+      reason: DeprecatedCollectionLogsSpec
+      status: "True"
+      type: Deprecated
+    - lastTransitionTime: "2025-07-25T19:10:39Z"
+      status: "True"
+      type: Ready
+    curation: {}
+    logStore:
+      elasticsearchStatus:
+      - cluster:
+          activePrimaryShards: 104
+          activeShards: 208
+          initializingShards: 0
+          numDataNodes: 3
+          numNodes: 3
+          pendingTasks: 0
+          relocatingShards: 0
+          status: green
+          unassignedShards: 0
+        clusterName: elasticsearch
+        nodeConditions:
+          elasticsearch-cdm-ffi967ib-1: []
+          elasticsearch-cdm-ffi967ib-2: []
+          elasticsearch-cdm-ffi967ib-3: []
+        nodeCount: 3
+        pods:
+          client:
+            failed: []
+            notReady: []
+            ready:
+            - elasticsearch-cdm-ffi967ib-1-85598974ff-d45t4
+            - elasticsearch-cdm-ffi967ib-2-5bf6d8cb9d-f2fdq
+            - elasticsearch-cdm-ffi967ib-3-58f8c4797-4dr44
+          data:
+            failed: []
+            notReady: []
+            ready:
+            - elasticsearch-cdm-ffi967ib-1-85598974ff-d45t4
+            - elasticsearch-cdm-ffi967ib-2-5bf6d8cb9d-f2fdq
+            - elasticsearch-cdm-ffi967ib-3-58f8c4797-4dr44
+          master:
+            failed: []
+            notReady: []
+            ready:
+            - elasticsearch-cdm-ffi967ib-1-85598974ff-d45t4
+            - elasticsearch-cdm-ffi967ib-2-5bf6d8cb9d-f2fdq
+            - elasticsearch-cdm-ffi967ib-3-58f8c4797-4dr44
+        shardAllocationEnabled: all
+    visualization:
+      kibanaStatus:
+      - deployment: kibana
+        pods:
+          failed: []
+          notReady: []
+          ready:
+          - kibana-6d6fc5466c-45mvz
+        replicaSets:
+        - kibana-6d6fc5466c
+        replicas: 1
+kind: List
+metadata:
+  resourceVersion: ""
+[pnbone@retdcbastion loki]$ oc get clf -oyaml
+apiVersion: v1
+items:
+- apiVersion: logging.openshift.io/v1
+  kind: ClusterLogForwarder
+  metadata:
+    annotations:
+      creationTimestamp: "2023-05-15T09:15:31Z"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"logging.openshift.io/v1","kind":"ClusterLogForwarder","metadata":{"annotations":{},"name":"instance","namespace":"openshift-logging"},"spec":{"inputs":[{"application":{"namespaces":["prod"]},"name":"my-app-logs"},{"application":{"namespaces":["cug","prod"]},"name":"my-app-logs-es"}],"outputs":[{"name":"siem-one-prod","syslog":{"facility":"local0","payloadKey":"message","rfc":"RFC5424","severity":"informational"},"type":"syslog","url":"udp://10.192.231.221:514"},{"name":"rsyslog-server1","syslog":{"facility":"local0","payloadKey":"message","rfc":"RFC5424","severity":"informational"},"type":"syslog","url":"udp://10.192.5.237:514"}],"pipelines":[{"inputRefs":["infrastructure","application","audit"],"labels":{"syslog":"siem-one-prod"},"name":"prod-siem-one","outputRefs":["siem-one-prod"]},{"inputRefs":["my-app-logs-es"],"name":"log-prod-es","outputRefs":["default"]},{"inputRefs":["my-app-logs"],"labels":{"syslog":"rsyslog-server1"},"name":"prod-rsyslog-server1","outputRefs":["rsyslog-server1"]}]}}
+    creationTimestamp: "2024-09-21T09:41:49Z"
+    generation: 3
+    name: instance
+    namespace: openshift-logging
+    resourceVersion: "515249460"
+    uid: e7967370-0640-47a9-a08f-c8811397d960
+  spec:
+    inputs:
+    - application:
+        namespaces:
+        - prod
+      name: my-app-logs
+    - application:
+        namespaces:
+        - cug
+        - prod
+      name: my-app-logs-es
+    outputs:
+    - name: siem-one-prod
+      syslog:
+        facility: local0
+        payloadKey: message
+        rfc: RFC5424
+        severity: informational
+      type: syslog
+      url: udp://10.192.231.221:514
+    - name: rsyslog-server1
+      syslog:
+        facility: local0
+        payloadKey: message
+        rfc: RFC5424
+        severity: informational
+      type: syslog
+      url: udp://10.192.5.239:514
+    pipelines:
+    - inputRefs:
+      - infrastructure
+      - application
+      - audit
+      labels:
+        syslog: siem-one-prod
+      name: prod-siem-one
+      outputRefs:
+      - siem-one-prod
+    - inputRefs:
+      - my-app-logs-es
+      name: log-prod-es
+      outputRefs:
+      - default
+    - inputRefs:
+      - my-app-logs
+      labels:
+        syslog: rsyslog-server1
+      name: prod-rsyslog-server1
+      outputRefs:
+      - rsyslog-server1
+  status:
+    conditions:
+    - lastTransitionTime: "2024-10-03T12:24:17Z"
+      status: "True"
+      type: Ready
+kind: List
+metadata:
+  resourceVersion: ""
+[pnbone@retdcbastion loki]$ mkdir old
+[pnbone@retdcbastion loki]$ oc get clf -oyaml > old/clf.yaml
+[pnbone@retdcbastion loki]$ oc get cl -oyaml > old/cl.yaml
+[pnbone@retdcbastion loki]$ ls -lrt
+total 12
+-rw-rw-r--. 1 pnbone pnbone 1474 Sep 19 11:35 configMap.yaml
+-rw-rw-r--. 1 pnbone pnbone 1261 Sep 19 11:59 rootca.crt
+-rw-rw-r--. 1 pnbone pnbone 1252 Sep 23 11:00 rbac.yaml
+drwxrwxr-x. 2 pnbone pnbone   37 Sep 23 11:04 old
+[pnbone@retdcbastion loki]$ vi rbac.yaml
+[pnbone@retdcbastion loki]$ oc apply -f rbac.yaml
+clusterrolebinding.rbac.authorization.k8s.io/logging-collector:write-logs created
+clusterrolebinding.rbac.authorization.k8s.io/logging-collector:collect-application created
+clusterrolebinding.rbac.authorization.k8s.io/logging-collector:collect-infrastructure created
+clusterrolebinding.rbac.authorization.k8s.io/logging-collector:collect-audit created
+[pnbone@retdcbastion loki]$ vi sa.yaml
+[pnbone@retdcbastion loki]$ oc apply -f sa.yaml
+serviceaccount/logging-collector created
+[pnbone@retdcbastion loki]$ oc get job -n openshift-marketplace
+NAME                                                              COMPLETIONS   DURATION   AGE
+0268d4795501ae403ef08e3d3e90a836cef9b4fa5d0e0b2fa3919c1766e409b   1/1           19s        3d23h
+0c4d611df8c2ca2e66aa510dda0823631005acebb308e7f04b8e697755ef6d1   1/1           6s         76d
+1029461ce748549b8226001b57ed2db880372723be44df21f5b3734090c6cd4   1/1           2m22s      76d
+28bc041013fa5e29a72a803346452babf01277d911a48bb7802b509f7544648   1/1           6s         76d
+34a0ebecc185993447ff2cf91c549b9f8982a98edb27b05bdb1b941ff04641d   1/1           2m33s      3d23h
+942a20ba6ea7797dc0f53a6bed0309d036e8d17b50a7c563247b79291ea66a9   1/1           3m16s      19h
+9aac8c1107d6bed881fc7c636979ce97ce335982b1d1f947e12bf55719aedb0   1/1           96s        76d
+ae1490ef486e2252ea20c2f2ddc768ede0b8bf9720c8ff3bd6706f07f352b72   1/1           3m12s      76d
+b1561832932af02b7bb943cf41ceaa93d18319b327dd6bf69ac4d249ebb8c51   1/1           4m12s      76d
+c47e55713b2e19e940f19502b602b505dd458a0df4c9f123e80038e13b54a69   1/1           6s         76d
+f30f17598b16bfa940d022f9be3748647c971db570f730f1271f6b30454f5b0   1/1           88s        76d
+[pnbone@retdcbastion loki]$ vi uiPlugin.yaml
+[pnbone@retdcbastion loki]$ oc apply -f uiPlugin.yaml
+uiplugin.observability.openshift.io/logging created
+[pnbone@retdcbastion loki]$ oc get sa
+NAME                       SECRETS   AGE
+builder                    1         2y80d
+cluster-logging-operator   1         9m10s
+default                    1         2y80d
+deployer                   1         2y80d
+elasticsearch              1         674d
+elasticsearch-metrics      1         674d
+kibana                     1         674d
+logging-collector          1         18m
+logging-loki               1         3d23h
+logging-loki-gateway       1         3d23h
+[pnbone@retdcbastion loki]$ vi clf.yaml
+[pnbone@retdcbastion loki]$ oc apply -f clf.yaml
+error: error parsing clf.yaml: error converting YAML to JSON: yaml: line 25: found a tab character that violates indentation
+[pnbone@retdcbastion loki]$ cat -n clf.yaml
+     1  apiVersion: observability.openshift.io/v1
+     2  kind: ClusterLogForwarder
+     3  metadata:
+     4    name: instance
+     5    namespace: openshift-logging
+     6  spec:
+     7    filters:
+     8      - name: labels
+     9        openshiftLabels:
+    10          syslog: siem-one-prod
+    11        type: openshiftLabels
+    12      - name: rsyslog-server1-labels
+    13        openshiftLabels:
+    14          syslog: rsyslog-server1
+    15        type: openshiftLabels
+    16    inputs:
+    17      - application:
+    18          includes:
+    19            - namespace: prod
+    20        name: my-app-logs
+    21        type: application
+    22      - application:
+    23          includes:
+    24            - namespace: prod
+    25                    - namespace: cug
+    26        name: my-app-logs-es
+    27        type: application
+    28    managementState: Managed
+    29    outputs:
+    30      - lokiStack:
+    31          authentication:
+    32            token:
+    33              from: serviceAccount
+    34          target:
+    35            name: logging-loki
+    36            namespace: openshift-logging
+    37        name: default-lokistack
+    38        tls:
+    39          ca:
+    40            configMapName: openshift-service-ca.crt
+    41            key: service-ca.crt
+    42        type: lokiStack
+    43      - name: siem-one-prod
+    44        syslog:
+    45          facility: local0
+    46          payloadKey: '{.message}'
+    47          rfc: RFC5424
+    48          severity: informational
+    49          url: 'udp://10.192.231.221:514'
+    50        type: syslog
+    51      - name: rsyslog-server1
+    52        syslog:
+    53          facility: local0
+    54          payloadKey: '{.message}'
+    55          rfc: RFC5424
+    56          severity: informational
+    57          url: 'udp://10.192.5.239:514'
+    58        type: syslog
+    59    pipelines:
+    60      - inputRefs:
+    61          - my-app-logs-es
+    62        name: forward-to-loki
+    63        outputRefs:
+    64          - default-lokistack
+    65      - inputRefs:
+    66          - application
+    67          - infrastructure
+    68          - audit
+    69        name: infra-logs
+    70        outputRefs:
+    71          - default-lokistack
+    72      - filterRefs:
+    73          - labels
+    74        inputRefs:
+    75          - infrastructure
+    76          - application
+    77          - audit
+    78        name: prod-siem-one
+    79        outputRefs:
+    80          - siem-one-prod
+    81      - filterRefs:
+    82          - rsyslog-server1-labels
+    83        inputRefs:
+    84          - my-app-logs
+    85        name: prod-rsyslog-server1
+    86        outputRefs:
+    87          - rsyslog-server1
+    88    serviceAccount:
+    89      name: logging-collector
+[pnbone@retdcbastion loki]$ vi clf.yaml
+[pnbone@retdcbastion loki]$ oc apply -f clf.yaml
+clusterlogforwarder.observability.openshift.io/instance created
+[pnbone@retdcbastion loki]$
