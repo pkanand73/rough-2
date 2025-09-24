@@ -1,5 +1,0 @@
-oc-mirror list operators --catalog=registry.redhat.io/redhat/redhat-operator-index:v4.16 --package=loki-operator --channel=stable
-wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.16/oc-mirror.tar.gz ===========================>oc-mirror
-wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.16/openshift-install-linux.tar.gz =====>openshift-install
-echo server 10.209.12.200 prefer iburst minpoll 4 maxpoll 4 xleave >> /etc/chrony.conf
-echo server 10.192.18.228 prefer iburst minpoll 4 maxpoll 4 xleave >> /etc/chrony.conf
