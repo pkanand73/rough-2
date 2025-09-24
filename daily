@@ -68,3 +68,5 @@ Metrics and status queries
 
 This traffic is not browser-based, and HSTS (HTTP Strict Transport Security) is a browser security feature. HSTS only applies to HTTPS web traffic accessed via browsers — not to internal service-to-service communication over TCP or REST APIs used by Kubernetes components.
                     
+=======================================================
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILOs19s+4Br+227jjA8oCjglCdCtbaQhWMYl+BzYcg7s pnb\v-01010033@HO39990FIN00023
