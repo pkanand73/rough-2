@@ -70,3 +70,25 @@ This traffic is not browser-based, and HSTS (HTTP Strict Transport Security) is 
                     
 =======================================================
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILOs19s+4Br+227jjA8oCjglCdCtbaQhWMYl+BzYcg7s pnb\v-01010033@HO39990FIN00023
+====================================
+S.No.
+
+Date
+
+Division
+
+System / Process
+
+QSA Comments
+
+4
+
+17-09-2025
+
+DBTD
+
+PNB ONE BIZ
+
+ 
+
+OCP – Hardening evidence will be required as per https://community.ibm.com/community/user/blogs/paul-bastide/2023/11/21/configuring-a-pci-dss-compliant-openshift-containe
