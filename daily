@@ -189,3 +189,75 @@ BinaryData
 Events:  <none>
 [oneadmin@bastion ~]$
 [oneadmin@bastion ~]$ oc get fileintegritynodestatuses.fileintegrity.openshift.io -n openshift-file-integrity -o json | jq '.items[] | {node: .nodeName, status: .status, results: .results}'
+[oneadmin@bastion ~]$ oc get configmap -n openshift-file-integrity | grep failed
+aide-fileintegrity-worker1.nonprod.mypnbone.in-failed   1      20h
+[oneadmin@bastion ~]$ oc logs -n openshift-file-integrity -l app=aide-fileintegrity
+Defaulted container "daemon" out of: daemon, check-folder (init)
+Defaulted container "daemon" out of: daemon, check-folder (init)
+Defaulted container "daemon" out of: daemon, check-folder (init)
+Defaulted container "daemon" out of: daemon, check-folder (init)
+Defaulted container "daemon" out of: daemon, check-folder (init)
+2025-09-26T07:32:37Z: aide check returned status 0
+2025-09-26T07:32:57Z: running aide check
+2025-09-26T07:33:54Z: aide check returned status 0
+2025-09-26T07:34:14Z: running aide check
+2025-09-26T07:35:02Z: aide check returned status 0
+2025-09-26T07:35:22Z: running aide check
+2025-09-26T07:36:20Z: aide check returned status 0
+2025-09-26T07:36:40Z: running aide check
+2025-09-26T07:37:27Z: aide check returned status 0
+2025-09-26T07:37:47Z: running aide check
+2025-09-26T07:31:40Z: aide check returned status 0
+2025-09-26T07:32:00Z: running aide check
+2025-09-26T07:33:12Z: aide check returned status 0
+2025-09-26T07:33:32Z: running aide check
+2025-09-26T07:34:42Z: aide check returned status 0
+2025-09-26T07:35:02Z: running aide check
+2025-09-26T07:36:13Z: aide check returned status 0
+2025-09-26T07:36:33Z: running aide check
+2025-09-26T07:37:44Z: aide check returned status 0
+2025-09-26T07:38:04Z: running aide check
+2025-09-26T07:34:59Z: aide check returned status 0
+2025-09-26T07:35:19Z: running aide check
+2025-09-26T07:35:43Z: aide check returned status 0
+2025-09-26T07:36:03Z: running aide check
+2025-09-26T07:36:27Z: aide check returned status 0
+2025-09-26T07:36:47Z: running aide check
+2025-09-26T07:37:12Z: aide check returned status 0
+2025-09-26T07:37:32Z: running aide check
+2025-09-26T07:37:56Z: aide check returned status 0
+2025-09-26T07:38:16Z: running aide check
+2025-09-26T07:35:09Z: running aide check
+2025-09-26T07:35:32Z: aide check returned status 0
+2025-09-26T07:35:52Z: running aide check
+2025-09-26T07:36:13Z: aide check returned status 0
+2025-09-26T07:36:33Z: running aide check
+2025-09-26T07:36:55Z: aide check returned status 0
+2025-09-26T07:37:15Z: running aide check
+2025-09-26T07:37:37Z: aide check returned status 0
+2025-09-26T07:37:57Z: running aide check
+2025-09-26T07:38:18Z: aide check returned status 0
+2025-09-26T07:32:25Z: aide check returned status 4
+2025-09-26T07:32:45Z: running aide check
+2025-09-26T07:33:46Z: aide check returned status 4
+2025-09-26T07:34:06Z: running aide check
+2025-09-26T07:35:07Z: aide check returned status 4
+2025-09-26T07:35:27Z: running aide check
+2025-09-26T07:36:31Z: aide check returned status 4
+2025-09-26T07:36:51Z: running aide check
+2025-09-26T07:37:52Z: aide check returned status 4
+2025-09-26T07:38:12Z: running aide check
+[oneadmin@bastion ~]$ oc -n openshift-file-integrity get pods -owide
+NAME                                      READY   STATUS    RESTARTS      AGE   IP             NODE                          NOMINATED NODE   READINESS GATES
+aide-fileintegrity-4thdn                  1/1     Running   0             21h   10.129.5.43    worker5.nonprod.mypnbone.in   <none>           <none>
+aide-fileintegrity-4wj57                  1/1     Running   0             21h   10.129.3.132   worker1.nonprod.mypnbone.in   <none>           <none>
+aide-fileintegrity-fqhwk                  1/1     Running   0             21h   10.131.2.122   worker3.nonprod.mypnbone.in   <none>           <none>
+aide-fileintegrity-pjpdj                  1/1     Running   0             21h   10.128.5.95    worker2.nonprod.mypnbone.in   <none>           <none>
+aide-fileintegrity-vw2t8                  1/1     Running   0             21h   10.130.5.125   worker4.nonprod.mypnbone.in   <none>           <none>
+aide-infra-fileintegrity-8flqh            0/1     Pending   0             20h   <none>         <none>                        <none>           <none>
+aide-infra-fileintegrity-9wbsk            0/1     Pending   0             20h   <none>         <none>                        <none>           <none>
+aide-infra-fileintegrity-khlhl            0/1     Pending   0             20h   <none>         <none>                        <none>           <none>
+file-integrity-operator-7f4d7d8d6-6njxd   1/1     Running   2 (24h ago)   24h   10.131.2.86    worker3.nonprod.mypnbone.in   <none>           <none>
+[oneadmin@bastion ~]$
+[oneadmin@bastion ~]$ oc -n openshift-file-integrity logs aide-fileintegrity-4wj57
+
