@@ -260,4 +260,69 @@ aide-infra-fileintegrity-khlhl            0/1     Pending   0             20h   
 file-integrity-operator-7f4d7d8d6-6njxd   1/1     Running   2 (24h ago)   24h   10.131.2.86    worker3.nonprod.mypnbone.in   <none>           <none>
 [oneadmin@bastion ~]$
 [oneadmin@bastion ~]$ oc -n openshift-file-integrity logs aide-fileintegrity-4wj57
+[oneadmin@bastion ~]$ oc explain fileintegrity.spec
+GROUP:      fileintegrity.openshift.io
+KIND:       FileIntegrity
+VERSION:    v1alpha1
 
+FIELD: spec <Object>
+
+DESCRIPTION:
+    FileIntegritySpec defines the desired state of FileIntegrity
+
+FIELDS:
+  config        <Object> -required-
+    FileIntegrityConfig defines the name, namespace, and data key for an AIDE
+    config to use for integrity checking.
+
+  debug <boolean>
+    <no description>
+
+  nodeSelector  <map[string]string>
+    <no description>
+
+  tolerations   <[]Object>
+    Specifies tolerations for custom taints. Defaults to allowing scheduling on
+    master and infra nodes.
+
+
+[oneadmin@bastion ~]$
+[oneadmin@bastion ~]$ oc explain fileintegrity.spec.config
+GROUP:      fileintegrity.openshift.io
+KIND:       FileIntegrity
+VERSION:    v1alpha1
+
+FIELD: config <Object>
+
+DESCRIPTION:
+    FileIntegrityConfig defines the name, namespace, and data key for an AIDE
+    config to use for integrity checking.
+
+FIELDS:
+  gracePeriod   <integer>
+    Time between individual aide scans
+
+  initialDelay  <integer>
+    InitialDelaySeconds is the number of seconds to wait before the first scan.
+    It is an optional field, and if not specified, the operator will default to
+    0
+
+  key   <string>
+    The key that contains the actual AIDE configuration in a configmap specified
+    by Name and Namespace. Defaults to aide.conf
+
+  maxBackups    <integer>
+    The maximum number of AIDE database and log backups (leftover from the
+    re-init process) to keep on a node.
+    Older backups beyond this number are automatically pruned by the daemon.
+
+  name  <string>
+    Name of a configMap that contains custom AIDE configuration. A default
+    configuration would be created if omitted.
+
+  namespace     <string>
+    Namespace of a configMap that contains custom AIDE configuration. A default
+    configuration would be created if omitted.
+
+
+[oneadmin@bastion ~]$
