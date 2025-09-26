@@ -92,3 +92,100 @@ PNB ONE BIZ
  
 
 OCP – Hardening evidence will be required as per https://community.ibm.com/community/user/blogs/paul-bastide/2023/11/21/configuring-a-pci-dss-compliant-openshift-containe
+
+==============================================================================================
+https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/security_and_compliance/file-integrity-operator#troubleshooting-file-integrity-operator
+
+[oneadmin@bastion ~]$ oc get fileintegritynodestatuses.fileintegrity.openshift.io -n openshift-file-integrity
+[oneadmin@bastion ~]$ oc get fileintegrities.fileintegrity.openshift.io -n openshift-file-integrity
+NAME                  AGE
+fileintegrity         21h
+infra-fileintegrity   19h
+[oneadmin@bastion ~]$
+[oneadmin@bastion ~]$ oc get fileintegritynodestatuses.fileintegrity.openshift.io -n openshift-file-integrity
+NAME                                        NODE                          STATUS
+fileintegrity-worker1.nonprod.mypnbone.in   worker1.nonprod.mypnbone.in   Failed
+fileintegrity-worker2.nonprod.mypnbone.in   worker2.nonprod.mypnbone.in   Succeeded
+fileintegrity-worker3.nonprod.mypnbone.in   worker3.nonprod.mypnbone.in   Succeeded
+fileintegrity-worker4.nonprod.mypnbone.in   worker4.nonprod.mypnbone.in   Succeeded
+fileintegrity-worker5.nonprod.mypnbone.in   worker5.nonprod.mypnbone.in   Succeeded
+[oneadmin@bastion ~]$
+[oneadmin@bastion ~]$ oc get fileintegritynodestatuses.fileintegrity.openshift.io/fileintegrity-worker1.nonprod.mypnbone.in -n openshift-file-integrity -ojsonpath='{.results}' | jq -r
+[
+  {
+    "condition": "Succeeded",
+    "lastProbeTime": "2025-09-26T07:22:48Z"
+  },
+  {
+    "condition": "Failed",
+    "filesChanged": 1,
+    "lastProbeTime": "2025-09-26T07:28:15Z",
+    "resultConfigMapName": "aide-fileintegrity-worker1.nonprod.mypnbone.in-failed",
+    "resultConfigMapNamespace": "openshift-file-integrity"
+  }
+]
+[oneadmin@bastion ~]$
+[oneadmin@bastion ~]$ oc describe cm aide-fileintegrity-worker1.nonprod.mypnbone.in-failed  -n openshift-file-integrity
+Name:         aide-fileintegrity-worker1.nonprod.mypnbone.in-failed
+Namespace:    openshift-file-integrity
+Labels:       file-integrity.openshift.io/node=worker1.nonprod.mypnbone.in
+              file-integrity.openshift.io/owner=fileintegrity
+              file-integrity.openshift.io/result-log=
+Annotations:  file-integrity.openshift.io/files-added: 0
+              file-integrity.openshift.io/files-changed: 1
+              file-integrity.openshift.io/files-removed: 0
+
+Data
+====
+integritylog:
+----
+Start timestamp: 2025-09-26 07:28:35 +0000 (AIDE 0.16)
+AIDE found differences between database and filesystem!!
+
+Summary:
+  Total number of entries:  36247
+  Added entries:              0
+  Removed entries:            0
+  Changed entries:            1
+
+---------------------------------------------------
+Changed entries:
+---------------------------------------------------
+
+f   ...    .C... : /hostroot/etc/resolv.conf
+
+---------------------------------------------------
+Detailed information about changes:
+---------------------------------------------------
+
+File: /hostroot/etc/resolv.conf
+  SHA512   : soG6u6KB+Jdb0jD8zj87m5RGrFRgRNV5 | PxPKqw9nsunZbaV3kzkcA9VBsZfZ5o/E
+             aD5upRmki+weH03IwEUVPFEsq09oikD4 | 1IoayvwXBfiqnew30noSBlsBVdNOC7Dk
+             4l4VFRZUq5EBrX+XT4ivBA==         | ZtQpTcR93nvSZcj7GurOYQ==
+
+
+---------------------------------------------------
+The attributes of the (uncompressed) database(s):
+---------------------------------------------------
+
+/hostroot/etc/kubernetes/aide.db.gz
+  MD5      : jGJswDbetI4+5BXT5K3PCQ==
+  SHA1     : otHStcS1C8gpLxboiXqjmNQgQK0=
+  RMD160   : PrjQ5/pJQpnjIYuJk/zsjZEIuUY=
+  TIGER    : yDt/6DiLtzDElcL59/T7vc29Mku1DPgR
+  SHA256   : 3AToUHGIxH7TKJeH5lzCYVOOPS6UP+HI
+             9JmakKI1KOo=
+  SHA512   : 88elRmTHqHoIjJ1GWag34UBn401o33Kk
+             q7CHcXfWW1KbMuIWeBqog7YOcZCa/X4D
+             /UH+Nu8zDU7FjrV3DSElsw==
+
+
+End timestamp: 2025-09-26 07:29:39 +0000 (run time: 1m 4s)
+
+
+BinaryData
+====
+
+Events:  <none>
+[oneadmin@bastion ~]$
+[oneadmin@bastion ~]$ oc get fileintegritynodestatuses.fileintegrity.openshift.io -n openshift-file-integrity -o json | jq '.items[] | {node: .nodeName, status: .status, results: .results}'
