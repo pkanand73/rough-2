@@ -326,3 +326,29 @@ FIELDS:
 
 
 [oneadmin@bastion ~]$
+=========================================
+curl --location 'https://channels-corporate-sit.apps.nonprod.mypnbone.in:443/openauth/v2/oauth/token' \
+
+--header 'Content-Type: application/x-www-form-urlencoded' \
+
+--header 'Cookie: fc9aeb2669ca69f938d80c114a106d0a=51d862bd42bf9385ca2ac95108bd9cd5' \
+
+--data-urlencode 'grant_type=password' \
+
+--data-urlencode 'client_id=78dd2e11f4920453ce77' \
+
+--data-urlencode 'bank_id=024' \
+
+--data-urlencode 'channel_id=G' \
+
+--data-urlencode 'client_secret=1e895df78ee8cb22c45e851741c137459452f9984f3fc7f7b6a5f05258d5' \
+
+--data-urlencode 'language_id=001' \
+
+--data-urlencode 'LOGIN_FLAG=1' \
+
+--data-urlencode 'device_id=MBS10214569' \
+
+--data-urlencode 'username=VTUSER' \
+
+--data-urlencode 'password=p@king1'
