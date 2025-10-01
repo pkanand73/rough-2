@@ -1,0 +1,85 @@
+[pnbone@corpdcbastion ~]$ oc logs hspc-csi-node-dwp2p -c hspc-csi-driver
+2025/09/09 17:25:33.765[00007][0001][ERROR]cdriver/pkg/util.runCommandExec(59)  [HSPC0x00009002] failed to execute the command : command:["ip -4 addr"], output:["sh: ip: command not found
+2025/09/09 17:25:33.765[00007][0001][ERROR]"], error message:["exit status 127"]
+2025/09/09 17:25:33.765[00007][0001][INFO ]======================================
+2025/09/09 17:25:33.765[00007][0001][INFO ]HSPC version : v3.16.0
+2025/09/09 17:25:33.765[00007][0001][INFO ]HSPCC version: 3.16.0
+2025/09/09 17:25:33.765[00007][0001][INFO ]Git commit   : 537d31e
+2025/09/09 17:25:33.765[00007][0001][INFO ]Go version   : 1.23.1
+2025/09/09 17:25:33.765[00007][0001][INFO ]======================================
+2025/09/09 17:25:33.765[00007][0001][INFO ]======================================
+2025/09/09 17:25:33.765[00007][0001][INFO ]System Info : Linux corpdcmaster3.corpdc.mypnbone.in 5.14.0-427.68.1.el9_4.x86_64
+2025/09/09 17:25:33.765[00007][0001][INFO ]OS Info:
+2025/09/09 17:25:33.765[00007][0001][INFO ]  VARIANT: CoreOS
+2025/09/09 17:25:33.765[00007][0001][INFO ]  PRETTY_NAME: Red Hat Enterprise Linux CoreOS 416.94.202505051351-0
+2025/09/09 17:25:33.765[00007][0001][INFO ]  HOME_URL: https://www.redhat.com/
+2025/09/09 17:25:33.765[00007][0001][INFO ]  BUG_REPORT_URL: https://access.redhat.com/labs/rhir/
+2025/09/09 17:25:33.765[00007][0001][INFO ]  REDHAT_BUGZILLA_PRODUCT_VERSION: 4.16
+2025/09/09 17:25:33.765[00007][0001][INFO ]  RHEL_VERSION: 9.4
+2025/09/09 17:25:33.765[00007][0001][INFO ]  VERSION: 416.94.202505051351-0
+2025/09/09 17:25:33.765[00007][0001][INFO ]  VERSION_ID: 4.16
+2025/09/09 17:25:33.765[00007][0001][INFO ]  VARIANT_ID: coreos
+2025/09/09 17:25:33.765[00007][0001][INFO ]  OPENSHIFT_VERSION: 4.16
+2025/09/09 17:25:33.765[00007][0001][INFO ]  ID: rhcos
+2025/09/09 17:25:33.765[00007][0001][INFO ]  DOCUMENTATION_URL: https://docs.okd.io/latest/welcome/index.html
+2025/09/09 17:25:33.765[00007][0001][INFO ]  REDHAT_BUGZILLA_PRODUCT: OpenShift Container Platform
+2025/09/09 17:25:33.765[00007][0001][INFO ]  REDHAT_SUPPORT_PRODUCT: OpenShift Container Platform
+2025/09/09 17:25:33.765[00007][0001][INFO ]  OSTREE_VERSION: 416.94.202505051351-0
+2025/09/09 17:25:33.765[00007][0001][INFO ]  NAME: Red Hat Enterprise Linux CoreOS
+2025/09/09 17:25:33.765[00007][0001][INFO ]  ID_LIKE: rhel fedora
+2025/09/09 17:25:33.765[00007][0001][INFO ]  PLATFORM_ID: platform:el9
+2025/09/09 17:25:33.765[00007][0001][INFO ]  ANSI_COLOR: 0;31
+2025/09/09 17:25:33.765[00007][0001][INFO ]  CPE_NAME: cpe:/o:redhat:enterprise_linux:9::baseos::coreos
+2025/09/09 17:25:33.766[00007][0001][INFO ]  REDHAT_SUPPORT_PRODUCT_VERSION: 4.16
+2025/09/09 17:25:33.766[00007][0001][INFO ]IP address  :
+2025/09/09 17:25:33.766[00007][0001][INFO ]Timezone    : 2025-09-09 17:25:33.764380413 +0530 IST m=+0.012841863
+2025/09/09 17:25:33.766[00007][0001][INFO ]======================================
+2025/09/09 17:25:33.766[00007][0001][INFO ]Failed to get following information
+2025/09/09 17:25:33.766[00007][0001][INFO ]Failed to get IP Address information :[HSPC0x00009002] failed to execute the command : command:["ip -4 addr"], output:["sh: ip: command not found
+2025/09/09 17:25:33.766[00007][0001][INFO ]"], error message:["exit status 127"]
+2025/09/09 17:25:33.766[00007][0001][INFO ]======================================
+2025/09/09 17:25:33.766[00007][0159][INFO ]Enabling volume access mode: SINGLE_NODE_WRITER
+2025/09/09 17:25:33.766[00007][0159][INFO ]Enabling volume access mode: MULTI_NODE_READER_ONLY
+2025/09/09 17:25:33.766[00007][0159][INFO ]Enabling volume access mode: MULTI_NODE_MULTI_WRITER
+2025/09/09 17:25:33.766[00007][0159][INFO ]Setting controller service capability: CREATE_DELETE_VOLUME
+2025/09/09 17:25:33.766[00007][0159][INFO ]Setting controller service capability: PUBLISH_UNPUBLISH_VOLUME
+2025/09/09 17:25:33.766[00007][0159][INFO ]Setting controller service capability: EXPAND_VOLUME
+2025/09/09 17:25:33.766[00007][0159][INFO ]Setting controller service capability: CREATE_DELETE_SNAPSHOT
+2025/09/09 17:25:33.766[00007][0159][INFO ]Setting controller service capability: CLONE_VOLUME
+2025/09/09 17:25:33.766[00007][0159][INFO ]Setting node service capability: STAGE_UNSTAGE_VOLUME
+2025/09/09 17:25:33.766[00007][0159][INFO ]Setting node service capability: EXPAND_VOLUME
+2025/09/09 17:25:33.766[00007][0159][INFO ]Starting Storage Plug-in for Containers service
+2025/09/09 17:25:33.766[00007][0159][INFO ]NodeStageVolume timeout value is [120] sec
+2025/09/09 17:25:33.766[00007][0159][INFO ][ENTER]:cdriver/csi/pkg/service/node.(*NodeServer).InitialDeleteInvalidSCSIDevices
+2025/09/09 17:25:33.766[00007][0159][INFO ][ENTER]:cdriver/csi/pkg/service/node.DeleteInvalidSCSIDevices
+2025/09/09 17:25:33.766[00007][0159][INFO ][ENTER]:cdriver/csi/pkg/service/node/dev.FindInvalidDevices
+2025/09/09 17:25:33.767[00007][0159][INFO ]Executing command : sg_inq /dev/sda --raw
+2025/09/09 17:25:33.768[00007][0159][INFO ]Executing command : sg_inq /dev/sda1 --raw
+2025/09/09 17:25:33.770[00007][0159][ERROR]cdriver/pkg/util.ReadFile(28)  [HSPC0x0000900a] file does not exist : check if file exists : /sys/block/sda1/device/vendor
+2025/09/09 17:25:33.770[00007][0159][INFO ]Executing command : sg_inq /dev/sda2 --raw
+2025/09/09 17:25:33.772[00007][0159][ERROR]cdriver/pkg/util.ReadFile(28)  [HSPC0x0000900a] file does not exist : check if file exists : /sys/block/sda2/device/vendor
+2025/09/09 17:25:33.772[00007][0159][INFO ]Executing command : sg_inq /dev/sda3 --raw
+2025/09/09 17:25:33.825[00007][0159][ERROR]cdriver/pkg/util.ReadFile(28)  [HSPC0x0000900a] file does not exist : check if file exists : /sys/block/sda3/device/vendor
+2025/09/09 17:25:33.825[00007][0159][INFO ]Executing command : sg_inq /dev/sda4 --raw
+2025/09/09 17:25:33.828[00007][0159][ERROR]cdriver/pkg/util.ReadFile(28)  [HSPC0x0000900a] file does not exist : check if file exists : /sys/block/sda4/device/vendor
+2025/09/09 17:25:33.828[00007][0159][INFO ]Executing command : sg_inq /dev/sdb --raw
+2025/09/09 17:25:33.830[00007][0159][INFO ][EXIT]:cdriver/csi/pkg/service/node/dev.FindInvalidDevices. Duration:0.063704 sec
+2025/09/09 17:25:33.830[00007][0159][INFO ][EXIT]:cdriver/csi/pkg/service/node.DeleteInvalidSCSIDevices. Duration:0.063773 sec
+2025/09/09 17:25:33.830[00007][0159][INFO ][EXIT]:cdriver/csi/pkg/service/node.(*NodeServer).InitialDeleteInvalidSCSIDevices. Duration:0.063816 sec
+2025/09/09 17:25:33.831[00007][0170][INFO ]Listening for connections on address: &net.UnixAddr{Name:"//csi/csi.sock", Net:"unix"}
+2025/09/09 17:25:34.642[00007][0101][INFO ]CSI gRPC Request : Func [/csi.v1.Identity/GetPluginInfo]
+2025/09/09 17:25:34.642[00007][0101][INFO ]CSI gRPC Response : Func [/csi.v1.Identity/GetPluginInfo], Status [Success], Volume ID [Volume ID not available], Value [name:"hspc.csi.hitachi.com"  vendor_version:"3.16.0"]
+2025/09/09 17:25:35.839[00007][0142][INFO ]========================================
+2025/09/09 17:25:35.839[00007][0142][INFO ]CSI gRPC Request : Func [/csi.v1.Node/NodeGetInfo]
+2025/09/09 17:25:35.839[00007][0142][INFO ]========================================
+2025/09/09 17:25:35.839[00007][0142][INFO ][ENTER]:cdriver/csi/pkg/service/node.(*NodeServer).NodeGetInfo
+2025/09/09 17:25:35.839[00007][0142][INFO ]trying to find WWPN and WWNN for HostNumber 1
+2025/09/09 17:25:35.839[00007][0142][INFO ]got host WWN : {hostNumber:1 WWN:{wwnn:2000b47af16fc203 wwpn:1000b47af16fc203}}
+2025/09/09 17:25:35.839[00007][0142][INFO ]trying to find WWPN and WWNN for HostNumber 2
+2025/09/09 17:25:35.840[00007][0142][INFO ]got host WWN : {hostNumber:2 WWN:{wwnn:2000b47af16fc204 wwpn:1000b47af16fc204}}
+2025/09/09 17:25:35.840[00007][0142][INFO ]trying to find WWPN and WWNN for HostNumber 3
+2025/09/09 17:25:35.840[00007][0142][INFO ]got host WWN : {hostNumber:3 WWN:{wwnn:2000b47af16fc263 wwpn:1000b47af16fc263}}
+2025/09/09 17:25:35.840[00007][0142][INFO ]trying to find WWPN and WWNN for HostNumber 4
+2025/09/09 17:25:35.840[00007][0142][INFO ]got host WWN : {hostNumber:4 WWN:{wwnn:2000b47af16fc264 wwpn:1000b47af16fc264}}
+2025/09/09 17:25:35.853[00007][0142][ERROR]cdriver/csi/pkg/service/node.CreateSPCNode(406)  [HSPC0x0000c044] failed to create SPCNode : contact customer support : Apply failed with 1 conflict: conflict with "spc" using csiutil.hitachi.com/v1: .spec.NQN
+2025/09/09 17:25:35.853[00007][0142][ERROR]github.com/container-storage-interface/spec/lib/go/csi._Node_NodeGetInfo_Handler.func1(1440)  failed to create SPCNode. shutting down : [HSPC0x0000c044] failed to create SPCNode : contact customer support : Apply failed with 1 conflict: conflict with "spc" using csiutil.hitachi.com/v1: .spec.NQN
