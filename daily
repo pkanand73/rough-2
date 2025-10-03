@@ -408,3 +408,11 @@ openshift-file-integrity   worker-fileintegrity-worker2.nonprod.mypnbone.in   wo
 openshift-file-integrity   worker-fileintegrity-worker3.nonprod.mypnbone.in   worker3.nonprod.mypnbone.in   Succeeded
 openshift-file-integrity   worker-fileintegrity-worker4.nonprod.mypnbone.in   worker4.nonprod.mypnbone.in   Succeeded
 openshift-file-integrity   worker-fileintegrity-worker5.nonprod.mypnbone.in   worker5.nonprod.mypnbone.in   Succeeded
+==================================================
+# Count logs from all pods in 1 hour (approx size)
+oc get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}{" "}{.metadata.name}{"\n"}{end}' \
+| head -n 50 \
+| while read ns pod; do
+  echo "---- $ns/$pod ----"
+  oc logs -n $ns $pod --since=1h | wc -c
+done | awk '{sum += $1} END {print "Approx total bytes in 1h (sample): " sum/1024/1024 " MB"}'
