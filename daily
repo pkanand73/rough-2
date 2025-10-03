@@ -328,3 +328,83 @@ FIELDS:
 
 
 --data-urlencode 'password=p@king1'
+=================================
+
+1. cluster log forwarding
+
+[oneadmin@bastion ~]$ oc get clf -A
+NAMESPACE           NAME       AGE
+openshift-logging   instance   2y141d
+
+=======
+
+2. network policy 
+
+
+[oneadmin@bastion ~]$ oc get networkpolicies.networking.k8s.io
+NAME                              POD-SELECTOR                   AGE
+allow-from-openshift-ingress      <none>                         2y155d
+allow-from-openshift-monitoring   <none>                         2y155d
+allow-same-namespace              <none>                         2y155d
+istio-expose-route-full-install   maistra.io/expose-route=true   2y26d
+istio-mesh-full-install           <none>                         2y26d
+
+=======
+
+3. configure an alternative identity provider
+
+
+[oneadmin@bastion ~]$ oc get oauth cluster -oyaml
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+  - htpasswd:
+      fileData:
+        name: htpass-secret
+    mappingMethod: claim
+    name: PNB_HTpasswd
+    type: HTPasswd
+  - ldap:
+      attributes:
+        email:
+        - mail
+        id:
+        - sAMAccountName
+        name:
+        - PNBONEOCP
+        preferredUsername:
+        - sAMAccountName
+      bindDN: pnboneocp@pnb.net
+      bindPassword:
+        name: ldap-secret
+      insecure: true
+      url: ldap://pnb.net/OU=HO-DigitalBankingDivision-51750,OU=HeadOfficeUsers,DC=pnb,DC=net?sAMAccountName?sub?(&(objectclass=*)(|(memberOf=CN=OCP_MBS,OU=Custom
+        Security Groups,DC=pnb,DC=net)))
+    mappingMethod: claim
+    name: PNB_NONPROD_LDAP
+    type: LDAP
+	
+=======
+	
+4. Removing the kubeadmin user
+
+ kubeadmin user Removed
+ 
+=======
+
+5. File Integrity	
+
+[oneadmin@bastion ~]$ oc get fileintegrities.fileintegrity.openshift.io  -A
+NAMESPACE                  NAME                   AGE
+openshift-file-integrity   master-fileintegrity   2d22h
+openshift-file-integrity   worker-fileintegrity   2d19h
+[oneadmin@bastion ~]$ oc get fileintegritynodestatuses.fileintegrity.openshift.io  -A
+NAMESPACE                  NAME                                               NODE                          STATUS
+openshift-file-integrity   worker-fileintegrity-worker1.nonprod.mypnbone.in   worker1.nonprod.mypnbone.in   Succeeded
+openshift-file-integrity   worker-fileintegrity-worker2.nonprod.mypnbone.in   worker2.nonprod.mypnbone.in   Succeeded
+openshift-file-integrity   worker-fileintegrity-worker3.nonprod.mypnbone.in   worker3.nonprod.mypnbone.in   Succeeded
+openshift-file-integrity   worker-fileintegrity-worker4.nonprod.mypnbone.in   worker4.nonprod.mypnbone.in   Succeeded
+openshift-file-integrity   worker-fileintegrity-worker5.nonprod.mypnbone.in   worker5.nonprod.mypnbone.in   Succeeded
