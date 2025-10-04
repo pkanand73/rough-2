@@ -416,3 +416,4 @@ oc get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}{" "}{.metadat
   echo "---- $ns/$pod ----"
   oc logs -n $ns $pod --since=1h | wc -c
 done | awk '{sum += $1} END {print "Approx total bytes in 1h (sample): " sum/1024/1024 " MB"}'
+============================================
