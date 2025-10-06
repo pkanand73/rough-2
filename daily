@@ -417,3 +417,4 @@ oc get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}{" "}{.metadat
   oc logs -n $ns $pod --since=1h | wc -c
 done | awk '{sum += $1} END {print "Approx total bytes in 1h (sample): " sum/1024/1024 " MB"}'
 ============================================
+https://console-openshift-console.apps.retaildc.mypnbone.in/k8s/ns/openshift-file-integrity/pods/aide-worker-fileintegrity-9pshw/vulnerabilities
