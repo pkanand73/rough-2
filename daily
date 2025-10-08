@@ -449,6 +449,22 @@ openshift-file-integrity   worker-fileintegrity-worker5.nonprod.mypnbone.in   wo
   }
 ]
 [pnbone@retdrbastion ~]$
+[pnbone@retdrbastion ~]$ oc get fileintegritynodestatuses.fileintegrity.openshift.io/worker-fileintegrity-retdrmaster1.retaildr.mypnbone.in -ojsonpath='{.results}' | jq -r
+[
+  {
+    "condition": "Succeeded",
+    "lastProbeTime": "2025-09-26T13:04:38Z"
+  },
+  {
+    "condition": "Failed",
+    "filesChanged": 1,
+    "lastProbeTime": "2025-10-08T05:34:20Z",
+    "resultConfigMapName": "aide-worker-fileintegrity-retdrmaster1.retaildr.mypnbone.in-failed",
+    "resultConfigMapNamespace": "openshift-file-integrity"
+  }
+]
+[pnbone@retdrbastion ~]$
+
 ==================================================
 # Count logs from all pods in 1 hour (approx size)
 oc get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}{" "}{.metadata.name}{"\n"}{end}' \
