@@ -1,0 +1,829 @@
+clf.txt
+==========================================================================
+OLD
+===
+
+apiVersion: logging.openshift.io/v1
+kind: ClusterLogForwarder
+metadata:
+  name: instance
+  namespace: openshift-logging
+spec:
+  inputs:
+    - application:
+        namespaces:
+          - corporate-sit
+          - retail-sit
+      name: my-app-logs
+  outputs:
+    - name: siem-one-nonprod
+      syslog:
+        facility: local0
+        payloadKey: message
+        rfc: RFC5424
+        severity: informational
+      type: syslog
+      url: 'udp://10.192.231.221:514'
+  pipelines:
+    - inputRefs:
+        - my-app-logs
+      name: forward-to-es
+      outputRefs:
+        - default
+    - inputRefs:
+        - infrastructure
+        - application
+        - audit
+      labels:
+        syslog: siem-one-nonprod
+      name: uat-siem-one
+      outputRefs:
+        - siem-one-nonprod
+
+
+NEW - without-elastic-search 
+===
+apiVersion: "observability.openshift.io/v1"
+kind: ClusterLogForwarder
+metadata:
+  name: instance
+  namespace: openshift-logging
+spec:
+  managementState: Managed
+  serviceAccount:
+    name: logging-collector
+  inputs:
+    - application:
+	    includes:
+        - namespace: corporate-sit
+        - namespace: retail-sit
+      name: my-app-logs
+  outputs:
+  - name: siem-one-nonprod
+    syslog:
+      facility: local0
+      payloadKey: message
+      rfc: RFC5424
+      severity: informational	
+	  url: 'udp://10.192.231.221:514'
+    type: syslog
+  - name: default-lokistack
+    type: lokiStack
+    lokiStack:
+      target:
+        name: logging-loki
+        namespace: openshift-logging
+      authentication:
+        token:
+          from: serviceAccount
+    tls:
+      ca:
+        key: service-ca.crt
+        configMapName: openshift-service-ca.crt
+  filters:
+  - name: labels
+    type: openshiftLabels
+    openshiftLabels:
+      syslog: siem-one-nonprod
+  pipelines:
+    - inputRefs:
+        - my-app-logs
+      name: forward-to-loki
+      outputRefs:
+        - default-lokistack
+	- name: infra-logs
+	  inputRefs:
+        - application
+        - infrastructure
+		- audit
+      outputRefs:
+        - default-lokistack
+    - inputRefs:
+        - infrastructure
+        - application
+        - audit
+      filterRefs:
+      - labels
+      name: uat-siem-one
+      outputRefs:
+        - siem-one-nonprod
+		
+		
+with-elastic-search
+===================
+apiVersion: "observability.openshift.io/v1"
+kind: ClusterLogForwarder
+metadata:
+  name: instance
+  namespace: openshift-logging
+spec:
+  managementState: Managed
+  serviceAccount:
+    name: logging-collector
+  inputs:
+    - application:
+	    includes:
+        - namespace: corporate-sit
+        - namespace: retail-sit
+      name: my-app-logs
+  outputs:
+  - name: siem-one-nonprod
+    type: syslog
+    syslog:
+      facility: local0
+      payloadKey: message
+      rfc: RFC5424
+      severity: informational
+      url: 'udp://10.192.231.221:514'
+  - name: default-lokistack
+    type: lokiStack
+    lokiStack:
+      target:
+        name: logging-loki
+        namespace: openshift-logging
+      authentication:
+        token:
+          from: serviceAccount
+    tls:
+      ca:
+        key: service-ca.crt
+        configMapName: openshift-service-ca.crt
+  - name: audit-elasticsearch
+    type: elasticsearch
+    elasticsearch:
+      url: https://elasticsearch:9200
+      version: 6
+      index: audit-write
+    tls:
+      ca:	
+        key: ca-bundle.crt
+        secretName: collector
+      certificate:
+        key: tls.crt
+        secretName: collector
+      key:
+        key: tls.key
+        secretName: collector
+  - name: app-elasticsearch
+    type: elasticsearch
+    elasticsearch:
+      url: https://elasticsearch:9200
+      version: 6
+      index: app-write
+    tls:
+      ca:
+        key: ca-bundle.crt
+        secretName: collector
+      certificate:
+        key: tls.crt
+        secretName: collector
+      key:
+        key: tls.key
+        secretName: collector
+  - name: infra-elasticsearch
+    type: elasticsearch
+    elasticsearch:
+      url: https://elasticsearch:9200
+      version: 6
+      index: infra-write
+    tls:
+      ca:
+        key: ca-bundle.crt
+        secretName: collector
+      certificate:
+        key: tls.crt
+        secretName: collector
+      key:
+        key: tls.key
+        secretName: collector
+  filters:
+  - name: labels
+    type: openshiftLabels
+    openshiftLabels:
+      syslog: siem-one-nonprod
+  pipelines:
+  - inputRefs:
+      - my-app-logs
+    name: forward-to-loki
+    outputRefs:
+      - default-lokistack
+  - name: infra-logs
+    inputRefs:
+      - application
+      - infrastructure
+  	- audit
+    outputRefs:
+      - default-lokistack
+  - inputRefs:
+      - infrastructure
+      - application
+      - audit
+    filterRefs:
+    - labels
+    name: uat-siem-one
+    outputRefs:
+      - siem-one-nonprod
+  - name: app
+    inputRefs:
+    - application
+    outputRefs:
+    - app-elasticsearch
+  - name: audit
+    inputRefs:
+    - audit
+    outputRefs:
+    - audit-elasticsearch
+  - name: infra
+    inputRefs:
+    - infrastructure
+    outputRefs:
+    - infra-elasticsearch
+	
+========================================================================================
+retail-dr
+===========
+apiVersion: logging.openshift.io/v1
+kind: ClusterLogForwarder
+metadata:
+  name: instance
+  namespace: openshift-logging
+spec:
+  inputs:
+    - application:
+        namespaces:
+          - dr
+      name: my-app-logs
+    - application:
+        namespaces:
+          - dr
+      name: my-app-logs-es
+  outputs:
+    - name: siem-one-dr
+      syslog:
+        facility: local0
+        payloadKey: message
+        rfc: RFC5424
+        severity: informational
+      type: syslog
+      url: 'udp://10.192.231.221:514'
+    - name: rsyslog-server1
+      syslog:
+        facility: local0
+        payloadKey: message
+        rfc: RFC5424
+        severity: informational
+      type: syslog
+      url: 'udp://10.209.7.89:514'
+  pipelines:
+    - inputRefs:
+        - infrastructure
+        - application
+        - audit
+      labels:
+        syslog: siem-one-dr
+      name: dr-siem-one
+      outputRefs:
+        - siem-one-dr
+    - inputRefs:
+        - my-app-logs-es
+      name: log-dr-es
+      outputRefs:
+        - default
+    - inputRefs:
+        - my-app-logs
+      labels:
+        syslog: rsyslog-server1
+      name: dr-rsyslog-server1
+      outputRefs:
+        - rsyslog-server1
+-----------------------------------------------------------------------
+apiVersion: observability.openshift.io/v1
+kind: ClusterLogForwarder
+metadata:
+  name: instance
+  namespace: openshift-logging
+spec:
+  managementState: Managed
+  serviceAccount:
+    name: logging-collector
+  inputs:
+    - name: my-app-logs
+      application:
+        includes:
+          - namespace: dr
+      type: application
+    - name: my-app-logs-es
+      application:
+        includes:
+          - namespace: dr
+      type: application
+  outputs:
+    - name: siem-one-dr
+      type: syslog
+      syslog:
+        facility: local0
+        payloadKey: '{.message}'
+        rfc: RFC5424
+        severity: informational
+        url: 'udp://10.192.231.221:514'
+    - name: rsyslog-server1
+      type: syslog
+      syslog:
+        facility: local0
+        payloadKey: '{.message}'
+        rfc: RFC5424
+        severity: informational
+        url: 'udp://10.209.7.89:514'
+    - name: default-lokistack
+      type: lokiStack
+      lokiStack:
+        target:
+          name: logging-loki
+          namespace: openshift-logging
+        authentication:
+          token:
+            from: serviceAccount
+      tls:
+        ca:
+          key: service-ca.crt
+          configMapName: openshift-service-ca.crt
+  filters:
+    - name: labels
+      type: openshiftLabels
+      openshiftLabels:
+        syslog: siem-one-dr
+    - name: rsyslog-server1-labels
+      type: openshiftLabels
+      openshiftLabels:
+        syslog: rsyslog-server1
+    - name: multiline                
+      type: detectMultilineException
+  pipelines:
+    - name: forward-to-loki
+      inputRefs:
+        - my-app-logs-es
+      outputRefs:
+        - default-lokistack
+      filterRefs:
+        - multiline
+    - name: infra-logs
+      inputRefs:
+        - application
+        - infrastructure
+        - audit
+      outputRefs:
+        - default-lokistack
+	  filterRefs:
+        - multiline
+    - name: dr-siem-one
+      inputRefs:
+        - infrastructure
+        - application
+        - audit
+      filterRefs:
+        - labels
+		- multiline
+      outputRefs:
+        - siem-one-dr
+    - name: dr-siem-one-rsyslog
+      inputRefs:
+        - my-app-logs
+      filterRefs:
+        - rsyslog-server1-labels
+		- multiline
+      outputRefs:
+        - rsyslog-server1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: "observability.openshift.io/v1"
+kind: ClusterLogForwarder
+metadata:
+  name: logging
+  namespace: openshift-logging
+spec:
+  managementState: Managed
+  serviceAccount:
+    name: logging-collector
+  inputs:
+    - application:
+	    includes:
+        - namespace: dr
+      name: my-app-logs
+	- application:
+	    includes:
+        - namespace: dr
+      name: my-app-logs-es
+  outputs:
+  - name: siem-one-dr
+    syslog:
+      facility: local0
+      payloadKey: message
+      rfc: RFC5424
+      severity: informational	
+	  url: 'udp://10.192.231.221:514'
+    type: syslog
+  - name: rsyslog-server1
+    syslog:
+      facility: local0
+      payloadKey: message
+      rfc: RFC5424
+      severity: informational	
+	  url: 'udp://10.209.7.89:514'
+    type: syslog
+  - name: default-lokistack
+    type: lokiStack
+    lokiStack:
+      target:
+        name: logging-loki
+        namespace: openshift-logging
+      authentication:
+        token:
+          from: serviceAccount
+    tls:
+      ca:
+        key: service-ca.crt
+        configMapName: openshift-service-ca.crt
+  filters:
+  - name: labels
+    type: openshiftLabels
+    openshiftLabels:
+      syslog: siem-one-dr
+  - name: rsyslog-server1-labels
+    type: openshiftLabels
+    openshiftLabels:
+      syslog: rsyslog-server1 
+  pipelines:
+    - inputRefs:
+        - my-app-logs-es
+      name: forward-to-loki
+      outputRefs:
+        - default-lokistack
+	- name: infra-logs
+	  inputRefs:
+        - application
+        - infrastructure
+		- audit
+      outputRefs:
+        - default-lokistack
+    - inputRefs:
+        - infrastructure
+        - application
+        - audit
+      filterRefs:
+      - labels
+      name: dr-siem-one
+      outputRefs:
+        - siem-one-dr
+    - inputRefs:
+        - my-app-logs
+      filterRefs:
+      - rsyslog-server1-labels
+      name: dr-siem-one
+      outputRefs:
+        - rsyslog-server1
+
+
+
+		
+apiVersion: logging.openshift.io/v1
+kind: ClusterLogging
+metadata:
+  name: instance
+  namespace: openshift-logging
+spec:
+  collection:
+    logs:
+      type: vector
+    type: vector
+  logStore:
+    elasticsearch:
+      nodeCount: 3
+      nodeSelector:
+        node-role.kubernetes.io/worker: ''
+      redundancyPolicy: SingleRedundancy
+      resources:
+        limits:
+          cpu: 10000m
+          memory: 48Gi
+        requests:
+          cpu: 10000m
+          memory: 48Gi
+      storage:
+        size: 10Ti
+        storageClassName: sc-hitachi-csi
+    retentionPolicy:
+      application:
+        maxAge: 30d
+      audit:
+        maxAge: 30d
+      infra:
+        maxAge: 30d
+    type: elasticsearch
+  managementState: Managed
+  visualization:
+    kibana:
+      nodeSelector:
+        node-role.kubernetes.io/worker: ''
+      replicas: 1
+      resources:
+        limits:
+          memory: 1Gi
+        requests:
+          cpu: 500m
+          memory: 1Gi
+    type: kibana
+		
+		
+
+ ==========================================================================
+lokistack.txt
+===========================================================================
+S3-secret
+=========
+oc create secret generic logging-loki-s3 \
+  --from-literal=bucketnames="<bucket_name>" \
+  --from-literal=endpoint="<aws_bucket_endpoint>" \
+  --from-literal=access_key_id="<aws_access_key_id>" \
+  --from-literal=access_key_secret="<aws_access_key_secret>" \
+  --from-literal=region="<aws_region_of_your_bucket>"
+  
+  
+oc create secret generic logging-loki-s3 \
+  --from-literal=bucketnames="<bucket_name>" \
+  --from-literal=endpoint="<minio_bucket_endpoint>" \
+  --from-literal=access_key_id="<minio_access_key_id>" \
+  --from-literal=access_key_secret="<minio_access_key_secret>"
+  
+
+
+
+
+
+
+apiVersion: loki.grafana.com/v1
+kind: LokiStack
+metadata:
+  name: logging-loki
+  namespace: openshift-logging
+spec:
+  limits:
+   global: 
+      retention: 
+        days: 15
+  managementState: Managed
+  replicationFactor: 1
+  size: 1x.small
+  storage:
+    schemas:
+    - effectiveDate: "2020-10-11"
+      version: v13
+    secret:
+      name: logging-loki-s3
+      type: aws
+  storageClassName: sc-hitachi-csi
+  tenants:
+    mode: openshift-logging
+  template:
+    compactor:  
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""  
+    distributor:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+    gateway:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+    indexGateway:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+    ingester:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+    querier:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+    queryFrontend:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+    ruler:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+		
+		
+		
+		
+Retail DR
+=========
+
+SC: sc-hitachi-csi
+
+size: 1x.medium
+
+
+oc create secret generic logging-loki-s3 \
+  --from-literal=bucketnames="dr-retail-prod" \
+  --from-literal=endpoint="https://dr-pnbone-prod-retail.hcpdc.obc.co.in" \
+  --from-literal=access_key_id="Y25pcHJvZA==" \
+  --from-literal=access_key_secret="bf76b39fa86b91c2ba4d2fe64d9e1c0d" 
+
+
+
+
+apiVersion: loki.grafana.com/v1
+kind: LokiStack
+metadata:
+  name: logging-loki
+  namespace: openshift-logging
+spec:
+  limits:
+   global: 
+      retention: 
+        days: 30
+  replicationFactor: 1
+  size: 1x.medium
+  storage:
+    schemas:
+    - effectiveDate: "2025-09-09"
+      version: v13
+    secret:
+      name: logging-loki-s3
+      type: s3
+	tls:
+	  caName: hitachi-s3-root-ca.crt
+	  caKey: service-ca.crt
+  storageClassName: sc-hitachi-csi
+  tenants:
+    mode: openshift-logging
+	
+
+kind: UIPlugin
+apiVersion: observability.openshift.io/v1alpha1
+metadata:
+  name: logging
+spec:
+  logging: 
+    lokistack:
+      name: logging-loki
+  type: Logging
+
+	
+	
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: hitachi-s3-root-ca.crt
+  namespace: openshift-logging
+data:
+  service-ca.crt: |
+	-----BEGIN CERTIFICATE-----
+    MIIDdzCCAl+gAwIBAgIQYR3f5SX1Rq1OqnWCoIRQ9jANBgkqhkiG9w0BAQsFADBC
+    MRMwEQYKCZImiZPyLGQBGRYDbmV0MRMwEQYKCZImiZPyLGQBGRYDcG5iMRYwFAYD
+    VQQDEw1QTkIgUk9PVCBDQS0yMB4XDTE5MTIwNjA1NTY1MFoXDTM5MTIwNjA2MDY0
+    OVowQjETMBEGCgmSJomT8ixkARkWA25ldDETMBEGCgmSJomT8ixkARkWA3BuYjEW
+    MBQGA1UEAxMNUE5CIFJPT1QgQ0EtMjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC
+    AQoCggEBAMJJ0bpn53KRLIqXCmiNMx5N+gOzHZBsw7lsuE0bYKEdw4TrJkCRp3xi
+    eWrAyL4hGF+c+kkmobcOlkocCZXmsLCAYzNubWWkwzB2HphbZaUQBzARjq3QXIIs
+    HgXLI3oXKK3bEhwvvYJbkBjd6UfkZMmo3HvbYKTjTzfI7wuORVrV2oOB/8TovnXo
+    cshnWFA4AA+fdqXM96i4HUTX233BY92BplXY63g9iND8CMSFgCQwqxI2sKk05nXc
+    9/zDI2NHAK7K3AamlLUHFCrvHqFHTm5xmINobWRwvMqdp9+bvNwKbKVgjOgfMdzS
+    /oJ3PFSL3EnP60GeK+GocaDGsxl+a7MCAwEAAaNpMGcwEwYJKwYBBAGCNxQCBAYe
+    BABDAEEwDgYDVR0PAQH/BAQDAgGGMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYE
+    FLu4HSoZt26irPDJxa+vUHeIlYwkMBAGCSsGAQQBgjcVAQQDAgEAMA0GCSqGSIb3
+    DQEBCwUAA4IBAQCpSZVqyUUjM13OBrHn+x9sPrP7bJI66F41I9EGjSb3EmDmIRUc
+    h9u/0GX4qrjO3pWo5KM+dxpEI0hHocQ1zzJHwHt8yqhkN1rDDpoo3TtGkL/iklre
+    QK9gBZReMem9W5N3KbiMG5dUjVnOiv3yH3WD4qk3PKafcJi4NzpkngtOPELuWqtH
+    qyIPQbABjELHTw4kPaO+qoVrpfqfAqnWnc2IgW2p7ioGs7iLIa42HpZZ9UvYcB0M
+    IZdpJFCROR/DFsrNFl86y3JmVWKqxdbhKduuxGl1UsLmnazP+5NgAZfR7PHkt5be
+    rdT6opvvn/Ox8Dv+7ujRTrabPNOBS2XzEnWk
+    -----END CERTIFICATE-----
+	
+	
+Disconnect Elasticsearch and Kibana CRs from ClusterLogging
+===========================================================
+
+Step 1: Temporarily set ClusterLogging to State Unmanaged
+
+oc -n openshift-logging patch clusterlogging/instance -p '{"spec":{"managementState": "Unmanaged"}}' --type=merge
+
+Step 2: Remove ClusterLogging OwnerReferences from Elasticsearch resource
+
+oc -n openshift-logging patch elasticsearch/elasticsearch -p '{"metadata":{"ownerReferences": []}}' --type=merge
+
+Step 3: Remove ClusterLogging OwnerReferences from Kibana resource
+
+oc -n openshift-logging patch kibana/kibana -p '{"metadata":{"ownerReferences": []}}' --type=merge
+
+Step 4: Backup Elasticsearch and Kibana resources
+
+ oc -n openshift-logging get elasticsearch elasticsearch -o yaml \
+  | yq -r 'del(.status,.metadata | .resourceVersion,.uid,.generation,.creationTimestamp,.selfLink)'  > /tmp/cr-elasticsearch.yaml
+  
+ oc -n openshift-logging get kibana kibana -o yaml \
+  | yq -r 'del(.status,.metadata | .resourceVersion,.uid,.generation,.creationTimestamp,.selfLink)' > /tmp/cr-kibana.yaml
+  
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+pnb1corpretail-nonprod.pnbone-01.hcpdr.obc.co.in
+pnb1retail-prod.pnbone-01.hcpdr.obc.co.in
+pnb1corpl-prod.pnbone-01.hcpdr.obc.co.in
+
+Subject Alternative Names: dr-pnbone-prod-corp.hcpdc.obc.co.in, dr-pnbone-prod-retail.hcpdc.obc.co.in, dr-retail-quay.dr-pnbone-prod-retail.hcpdc.obc.co.in, dr-corp-quay.dr-pnbone-prod-corp.hcpdc.obc.co.in, dr-retail-registry.dr-pnbone-prod-retail.hcpdc.obc.co.in, dr-corp-registry.dr-pnbone-prod-corp.hcpdc.obc.co.in, dbp.hcpdc.obc.co.in, *.dbp.hcpdc.obc.co.in, cbdc.hcpdc.obc.co.in, *.cbdc.hcpdc.obc.co.in, IP Address:10.209.19.84, IP Address:10.209.19.85, IP Address:10.209.19.86, IP Address:10.209.19.87
+
+
+
+retail dr
+=========
+
+loki - dr-retail-prod.dr-pnbone-prod-retail.hcpdc.obc.co.in
+
+quay- dr-retail-quay.dr-pnbone-prod-retail.hcpdc.obc.co.in
+
+internal reg- dr-retail-registry.dr-pnbone-prod-retail.hcpdc.obc.co.in
+
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: logging-collector 
+  namespace: openshift-logging 
+
+
+RBAC
+----
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: logging-collector:write-logs
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: logging-collector-logs-writer 
+subjects:
+- kind: ServiceAccount
+  name: logging-collector
+  namespace: openshift-logging
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: logging-collector:collect-application
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: collect-application-logs 
+subjects:
+- kind: ServiceAccount
+  name: logging-collector
+  namespace: openshift-logging
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+ name: logging-collector:collect-infrastructure
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: collect-infrastructure-logs 
+subjects:
+- kind: ServiceAccount
+  name: logging-collector
+  namespace: openshift-logging
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: logging-collector:collect-audit
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: collect-audit-logs
+subjects:
+- kind: ServiceAccount
+  name: logging-collector
+  namespace: openshift-logging
