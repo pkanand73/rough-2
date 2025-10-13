@@ -1,0 +1,56 @@
+apiVersion: logging.openshift.io/v1
+kind: ClusterLogForwarder
+metadata:
+  name: instance
+  namespace: openshift-logging
+spec:
+  inputs:
+    - application:
+        namespaces:
+          - dr
+          - oepay-dr
+      name: my-app-logs
+    - application:
+        namespaces:
+          - dr
+          - oepay-dr
+      name: my-app-logs-es
+  outputs:
+    - name: siem-one-prod
+      syslog:
+        facility: local0
+        payloadKey: message
+        rfc: RFC5424
+        severity: informational
+      type: syslog
+      url: 'udp://10.192.231.221:514'
+    - name: rsyslog-server1
+      syslog:
+        facility: local0
+        payloadKey: message
+        rfc: RFC5424
+        severity: informational
+      type: syslog
+      url: 'udp://10.209.7.76:514'
+  pipelines:
+    - inputRefs:
+        - infrastructure
+        - application
+        - audit
+      labels:
+        syslog: siem-one-prod
+      name: prod-siem-one
+      outputRefs:
+        - siem-one-prod
+    - inputRefs:
+        - my-app-logs-es
+      name: log-prod-es
+      outputRefs:
+        - default
+    - inputRefs:
+        - my-app-logs
+      labels:
+        syslog: rsyslog-server1
+      name: prod-rsyslog-server1
+      outputRefs:
+        - rsyslog-server1
