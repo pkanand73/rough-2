@@ -1,3 +1,20 @@
+Source:
+master4.nonprod.mypnbone.in		10.192.7.12
+master5.nonprod.mypnbone.in		10.192.7.13
+master6.nonprod.mypnbone.in		10.192.7.14
+
+Destination:
+10.192.30.192
+10.192.30.193
+10.192.30.194
+10.192.30.195
+
+Port: 443
+
+Error:
+Message:               Progressing: Unable to apply resources: unable to sync storage configuration: RequestError: send request failed
+caused by: Head "https://pnbone-01.hcpdr.obc.co.in/pnb1-nonprod": dial tcp 10.192.30.193:443: i/o timeout, requeuing
+
 
 =================================================
 [pnbone@retdrbastion ~]$ nmap --script ssl-enum-ciphers -p 443 pnbone-prod-retail.hcpdc.obc.co.in  -Pn
