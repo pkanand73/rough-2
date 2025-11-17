@@ -1,4 +1,15 @@
-Source:
+Dear Team,
+
+As per the screenshot you shared, we can see that the retention period is configured as 5 days. However, when checking in the log console, we still observe logs older than 5 days (in fact, more than 30 days). Could you please verify and confirm whether the retention policy set at the storage level is functioning as expected?
+
+Additionally, under "Retention options", we noticed the setting for "custom metadata options for objects under retention". The available options are 
+1: add 
+2: add, delete, and replace.
+
+Currently, it appears to be set to add. Could you clarify whether this setting is related to bucket policies for handling log data? If so, we request that it be configured to add, delete & replace so that old log data can be properly deleted in accordance with the retention policy.
+
+
+================================Source:
 master4.nonprod.mypnbone.in		10.192.7.12
 master5.nonprod.mypnbone.in		10.192.7.13
 master6.nonprod.mypnbone.in		10.192.7.14
