@@ -1,3 +1,26 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: collector-error-alert
+  namespace: openshift-logging
+  labels:
+    release: cluster-observability-operator
+spec:
+  groups:
+  - name: collector-logs
+    rules:
+    - alert: CollectorLogErrorsDetected
+      expr: |
+        sum by (pod) (
+          rate({namespace="openshift-logging", container="collector"} |= "error" [5m])
+        ) > 0
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Error logs found in collector pod"
+        description: "Errors were detected in collector pod logs for the past 5 minutes."
+==============================================
 Dear Team,
 
 As per the screenshot you shared, we can see that the retention period is configured as 5 days. However, when checking in the log console, we still observe logs older than 5 days (in fact, more than 30 days). Could you please verify and confirm whether the retention policy set at the storage level is functioning as expected?
