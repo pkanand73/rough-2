@@ -1,35 +1,5 @@
-level=info ts=2025-11-19T09:22:32.494938198Z caller=memberlist_client.go:504 phase=periodic_rejoin msg="re-joined memberlist cluster" reached_nodes=9
-level=info ts=2025-11-19T09:22:39.284993867Z caller=marker.go:202 msg="no marks file found"
-level=info ts=2025-11-19T09:22:39.73378733Z caller=expiration.go:78 msg="overall smallest retention period 1763112159.733, default smallest retention period 1763112159.733"
-level=info ts=2025-11-19T09:22:39.770798163Z caller=compactor.go:769 msg="compacting table" table-name=index_20411
-level=info ts=2025-11-19T09:22:39.80282511Z caller=table.go:132 table-name=index_20411 msg="listed files" count=113
-level=info ts=2025-11-19T09:22:39.828965299Z caller=util.go:77 table-name=index_20411 file-name=1763521226-logging-loki-ingester-0-1758262236579330662.tsdb.gz msg="downloaded file" total_time=25.223827ms
-level=info ts=2025-11-19T09:22:39.830772332Z caller=util.go:124 table-name=index_20411 file-name=1763521226-logging-loki-ingester-0-1758262236579330662.tsdb.gz size="17 kB" msg="downloaded and extracted file" downloadtime=25.223827ms extracttime=1.781044ms
-level=info ts=2025-11-19T09:22:39.833754245Z caller=util.go:77 table-name=index_20411 file-name=1763519426-logging-loki-ingester-0-1758262236579330662.tsdb.gz msg="downloaded file" total_time=30.042842ms
-level=info ts=2025-11-19T09:22:39.835715287Z caller=util.go:124 table-name=index_20411 file-name=1763519426-logging-loki-ingester-0-1758262236579330662.tsdb.gz size="17 kB" msg="downloaded and extracted file" downloadtime=30.042842ms extracttime=1.930395ms
-level=info ts=2025-11-19T09:22:39.836789665Z caller=util.go:77 table-name=index_20411 file-name=1763523926-logging-loki-ingester-0-1758262236579330662.tsdb.gz msg="downloaded file" total_time=32.937261ms
-level=info ts=2025-11-19T09:22:39.84039111Z caller=util.go:77 table-name=index_20411 file-name=1763522153-logging-loki-ingester-2-1758262400943132624.tsdb.gz msg="downloaded file" total_time=36.584404ms
-level=info ts=2025-11-19T09:22:39.841881772Z caller=util.go:124 table-name=index_20411 file-name=1763523926-logging-loki-ingester-0-1758262236579330662.tsdb.gz size="19 kB" msg="downloaded and extracted file" downloadtime=32.937261ms extracttime=5.041814ms
-level=info ts=2025-11-19T09:22:39.842401109Z caller=util.go:77 table-name=index_20411 file-name=1763515826-logging-loki-ingester-0-1758262236579330662.tsdb.gz msg="downloaded file" total_time=38.855098ms
-level=info ts=2025-11-19T09:22:39.842498459Z caller=util.go:77 table-name=index_20411 file-name=1763518526-logging-loki-ingester-0-1758262236579330662.tsdb.gz msg="downloaded file" total_time=38.841102ms
-level=info ts=2025-11-19T09:22:39.842598934Z caller=util.go:124 table-name=index_20411 file-name=1763515826-logging-loki-ingester-0-1758262236579330662.tsdb.gz size="18 kB" msg="downloaded and extracted file" downloadtime=38.855098ms extracttime=187.413Âµs
-level=info ts=2025-11-19T09:22:39.843362407Z caller=util.go:77 table-name=index_20411 file-name=1763523026-logging-loki-ingester-0-1758262236579330662.tsdb.gz msg="downloaded file" total_time=39.526927ms
-level=info ts=2025-11-19T09:22:39.844113301Z caller=util.go:124 table-name=index_20411 file-name=1763522153-logging-loki-ingester-2-1758262400943132624.tsdb.gz size="18 kB" msg="downloaded and extracted file" downloadtime=36.584404ms extracttime=3.696195ms
-level=info ts=2025-11-19T09:22:39.844171255Z caller=util.go:124 table-name=index_20411 file-name=1763518526-logging-loki-ingester-0-1758262236579330662.tsdb.gz size="17 kB" msg="downloaded and extracted file" downloadtime=38.841102ms extracttime=1.658081ms
-level=info ts=2025-11-19T09:22:39.844814775Z caller=util.go:124 table-name=index_20411 file-name=1763523026-logging-loki-ingester-0-1758262236579330662.tsdb.gz size="17 kB" msg="downloaded and extracted file" downloadtime=39.526927ms extracttime=1.440769ms
-level=info ts=2025-11-19T09:22:39.844906489Z caller=util.go:77 table-name=index_20411 file-name=1763518553-logging-loki-ingester-2-1758262400943132624.tsdb.gz msg="downloaded file" total_time=41.241068ms
-level=info ts=2025-11-19T09:22:39.846100928Z caller=util.go:77 table-name=index_20411 file-name=1763525726-logging-loki-ingester-0-1758262236579330662.tsdb.gz msg="downloaded file" total_time=3.426521ms
-level=info ts=2025-11-19T09:22:39.846283615Z caller=util.go:124 table-name=index_20411 file-name=1763525726-logging-loki-ingester-0-1758262236579330662.tsdb.gz size="16 kB" msg="downloaded and extracted file" downloadtime=3.426521ms extracttime=171.271Âµs
-level=info ts=2025-11-19T09:22:39.846653739Z caller=util.go:124 table-name=index_20411 file-name=1763518553-logging-loki-ingester-2-1758262400943132624.tsdb.gz size="19 kB" msg="downloaded and extracted file" downloadtime=41.241068ms extracttime=1.727879ms
-level=info ts=2025-11-19T09:22:40.582585523Z caller=util.go:77 table-name=index_20411 file-name=1763512236-logging-loki-ingester-1-1758262317106174690.tsdb.gz msg="downloaded file" total_time=779.17674ms
-level=info ts=2025-11-19T09:22:40.582739352Z caller=util.go:124 table-name=index_20411 file-name=1763512236-logging-loki-ingester-1-1758262317106174690.tsdb.gz size="4.7 kB" msg="downloaded and extracted file" downloadtime=779.17674ms extracttime=129.903Âµs
-level=info ts=2025-11-19T09:22:40.799835063Z caller=util.go:77 table-name=index_20411 user-id=application user-id=application file-name=1763538759545474264-compactor-1763502041852-1763538327876-4c485036.tsdb.gz msg="downloaded file" total_time=194.839534ms
-level=info ts=2025-11-19T09:22:40.802441689Z caller=util.go:124 table-name=index_20411 user-id=application user-id=application file-name=1763538759545474264-compactor-1763502041852-1763538327876-4c485036.tsdb.gz size="517 kB" msg="downloaded and extracted file" downloadtime=194.839534ms extracttime=2.574406ms
-level=info ts=2025-11-19T09:22:40.916406059Z caller=index_set.go:270 table-name=index_20411 user-id=application user-id=application msg="removing source db files from storage" count=1
-level=error ts=2025-11-19T09:22:40.943352714Z caller=compactor.go:662 msg="failed to compact files" table=index_20411 err="SerializationError: empty response payload\n\tstatus code: 204, request id: , host id: \ncaused by: EOF"
-level=error ts=2025-11-19T09:22:40.943388635Z caller=compactor.go:571 msg="failed to apply retention" err="SerializationError: empty response payload\n\tstatus code: 204, request id: , host id: \ncaused by: EOF"
-level=info ts=2025-11-19T09:23:39.285508798Z caller=marker.go:202 msg="no marks file found"
-level=info ts=2025-11-19T09:24:02.50058921Z caller=memberlist_client.go:504 phase=periodic_rejoin msg="re-joined memberlist cluster" reached_nodes=9
+Bucket Name		             Volume-Size	    Namespace-Url	                                               accesskey	       secretkey	                        Access
+pnb1retail-prod		        36 TB	          https://pnb1retail-prod.pnbone-01.hcpdr.obc.co.in	             cG5ib25lLTAx	     3f4afa49e024dfbb091d6a4650119760	  Read/Write
 
 ========================
 apiVersion: monitoring.coreos.com/v1
