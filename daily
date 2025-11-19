@@ -1,3 +1,12 @@
+2025-11-19T06:58:24.241848Z ERROR sink{component_kind="sink" component_id=output_rsyslog_server1 component_type=socket}: vector::internal_events::socket: Error sending data. error=Message too long (os error 90) error_code="socket_send" error_type="writer_failed" stage="sending" mode=udp internal_log_rate_limit=true
+2025-11-19T06:58:24.241849Z ERROR sink{component_kind="sink" component_id=output_siem_one_prod component_type=socket}: vector::internal_events::socket: Error sending data. error=Message too long (os error 90) error_code="socket_send" error_type="writer_failed" stage="sending" mode=udp internal_log_rate_limit=true
+2025-11-19T06:58:24.241874Z ERROR sink{component_kind="sink" component_id=output_rsyslog_server1 component_type=socket}: vector_common::internal_event::component_events_dropped: Events dropped intentional=false count=1 reason="Error sending data." internal_log_rate_limit=true
+2025-11-19T06:58:24.241881Z ERROR sink{component_kind="sink" component_id=output_siem_one_prod component_type=socket}: vector_common::internal_event::component_events_dropped: Events dropped intentional=false count=1 reason="Error sending data." internal_log_rate_limit=true
+2025-11-19T06:58:26.403323Z ERROR sink{component_kind="sink" component_id=output_rsyslog_server1 component_type=socket}: vector::internal_events::socket: Internal log [Error sending data.] is being suppressed to avoid flooding.
+2025-11-19T06:58:26.403347Z ERROR sink{component_kind="sink" component_id=output_rsyslog_server1 component_type=socket}: vector_common::internal_event::component_events_dropped: Internal log [Events dropped] is being suppressed to avoid flooding.
+2025-11-19T06:58:26.407569Z ERROR sink{component_kind="sink" component_id=output_siem_one_prod component_type=socket}: vector::internal_events::socket: Internal log [Error sending data.] is being suppressed to avoid flooding.
+2025-11-19T06:58:26.407583Z ERROR sink{component_kind="sink" component_id=output_siem_one_prod component_type=socket}: vector_common::internal_event::component_events_dropped: Internal log [Events dropped] is being suppressed to avoid flooding.
+========================
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
