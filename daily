@@ -1,6 +1,7 @@
 Bucket Name		             Volume-Size	    Namespace-Url	                                               accesskey	       secretkey	                        Access
-pnb1retail-prod		        36 TB	          https://pnb1retail-prod.pnbone-01.hcpdr.obc.co.in	             cG5ib25lLTAx	     3f4afa49e024dfbb091d6a4650119760	  Read/Write
-
+pnb1corpretail-nonprod		6 TB	          https://pnb1corpretail-nonprod.pnbone-01.hcpdr.obc.co.in	     cG5ib25lLTAx	     	                                  Read/Write
+pnb1retail-prod		        36 TB	          https://pnb1retail-prod.pnbone-01.hcpdr.obc.co.in	             cG5ib25lLTAx	     	                                  Read/Write
+pnb1corpl-prod		        12 TB	          https://pnb1corpl-prod.pnbone-01.hcpdr.obc.co.in	             cG5ib25lLTAx	     	                                  Read/Write
 ========================
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
