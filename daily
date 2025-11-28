@@ -1,3 +1,14 @@
+GRPC call: /csi.v1.Controller/CreateVolume
+I1128 09:33:34.847215 1 connection.go:194] GRPC request: {"capacity_range":{"required_bytes":1073741824},"name":"pvc-61e0ea4b-382d-4d3f-b35e-b75c05ad4734","parameters":{"connectionType":"fc","poolID":"9","portID":"CL9-C,CLA-C,CLB-C,CLC-C","serialNumber":"50906"},"secrets":"***stripped***","volume_capabilities":[{"AccessType":{"Mount":{"fs_type":"xfs"}},"access_mode":{"mode":1}}]}
+I1128 09:33:34.856195 1 connection.go:200] GRPC response: {}
+I1128 09:33:34.856202 1 connection.go:201] GRPC error: rpc error: code = Internal desc = Storage could not be connected : [HSPC0x0000101a] the REST server is unavailable : wait until the REST server is ready
+I1128 09:33:34.856214 1 controller.go:816] CreateVolume failed, supports topology = false, node selected false => may reschedule = false => state = Finished: rpc error: code = Internal desc = Storage could not be connected : [HSPC0x0000101a] the REST server is unavailable : wait until the REST server is ready
+I1128 09:33:34.856234 1 controller.go:1075] Final error received, removing PVC 61e0ea4b-382d-4d3f-b35e-b75c05ad4734 from claims in progress
+W1128 09:33:34.856243 1 controller.go:934] Retrying syncing claim "61e0ea4b-382d-4d3f-b35e-b75c05ad4734", failure 17
+E1128 09:33:34.856255 1 controller.go:957] error syncing claim "61e0ea4b-382d-4d3f-b35e-b75c05ad4734": failed to provision volume with StorageClass "sc-hitachi-csi": rpc error: code = Internal desc = Storage could not be connected : [HSPC0x0000101a] the REST server is unavailable : wait until the REST server is ready
+I1128 09:33:34.856305 1 event.go:298] Event(v1.ObjectReference{Kind:"PersistentVolumeClaim", Namespace:"kube-system", Name:"test", UID:"61e0ea4b-382d-4d3f-b35e-b75c05ad4734", APIVersion:"v1", ResourceVersion:"136848686", FieldPath:""}): type: 'Warning' reason: 'ProvisioningFailed' failed to provision volume with StorageClass "sc-hitachi-csi": rpc error: code = Internal desc = Storage could not be connected : [HSPC0x0000101a] the REST server is unavailable : wait until the REST server is ready
+
+
 Bucket Name		             Volume-Size	    Namespace-Url	                                               accesskey	       secretkey	                        Access
 pnb1corpretail-nonprod		6 TB	          https://pnb1corpretail-nonprod.pnbone-01.hcpdr.obc.co.in	     cG5ib25lLTAx	     	                                  Read/Write
 pnb1retail-prod		        36 TB	          https://pnb1retail-prod.pnbone-01.hcpdr.obc.co.in	             cG5ib25lLTAx	     	                                  Read/Write
