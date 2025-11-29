@@ -1,3 +1,281 @@
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: deh
+  namespace: prod
+
+spec:
+  replicas: 12
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: retail-prod-apps
+      app.kubernetes.io/name: deh
+    spec:
+      nodeSelector:
+        application: mobilebanking
+      restartPolicy: Always
+      initContainers:
+        - resources:
+            limits:
+              cpu: 20m
+              memory: 75M
+            requests:
+              cpu: 10m
+              memory: 50M
+          terminationMessagePath: /dev/termination-log
+          name: appd-agent-attach-java
+          command:
+            - /bin/sh
+            - '-c'
+            - 'cp -r /opt/appdynamics/. /opt/appdynamics-java && chown -R 10001:11001 /opt/appdynamics-java ; ls -la /opt/appdynamics-java '
+          securityContext:
+            privileged: false
+            runAsUser: 10001
+            runAsGroup: 11001
+            runAsNonRoot: false
+            readOnlyRootFilesystem: false
+            allowPrivilegeEscalation: false
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: appd-agent-repo-java
+              mountPath: /opt/appdynamics-java
+          terminationMessagePolicy: File
+          image: 'retaildc-registry-quay-quay-enterprise.apps.retaildc.mypnbone.in/pnbretailappdynamics/java-agent:25.4.0'
+      serviceAccountName: finacle-sa
+      imagePullSecrets:
+        - name: retail-prod-apps-regcred
+      schedulerName: default-scheduler
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 11001
+        fsGroup: 11001
+      containers:
+        - resources:
+            limits:
+              cpu: '2'
+              memory: 17Gi
+            requests:
+              cpu: '2'
+              memory: 10Gi
+          readinessProbe:
+            httpGet:
+              path: /deh/health
+              port: 9090
+              scheme: HTTP
+            initialDelaySeconds: 245
+            timeoutSeconds: 230
+            periodSeconds: 230
+            successThreshold: 1
+            failureThreshold: 3
+          terminationMessagePath: /dev/termination-log
+          name: deh
+          livenessProbe:
+            httpGet:
+              path: /deh/health
+              port: 9090
+              scheme: HTTP
+            initialDelaySeconds: 250
+            timeoutSeconds: 230
+            periodSeconds: 230
+            successThreshold: 1
+            failureThreshold: 3
+          env:
+            - name: APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cluster-agent-secret
+                  key: controller-key
+            - name: JAVA_OPTS
+              value: '-Djava.security.egd=file:/dev/./urandom -Dconfig.server.profile=prod -Dconfig.server.credential.type=basic -Dconfig.server.credential.basic.username=configuser -Dconfig.server.credential.basic.password=B8SBe/GIaIOYWrVVkMXkxw==  -Xms2048m -Xmx8192m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:CompressedClassSpaceSize=256M -Xlog:gc*,gc+age*=trace,gc+classhisto*=trace,safepoint:file=/opt/log/gc-%%t_%%p.log:tags,time,uptime,level:filecount=20,filesize=50M  -XX:InitiatingHeapOccupancyPercent=45 -XX:MaxMetaspaceSize=500m -XX:+UseStringDeduplication -XX:G1ReservePercent=20 -XX:MaxDirectMemorySize=256m -XX:G1HeapRegionSize=4m -Dsun.net.client.defaultReadTimeout=60000 -Doracle.jdbc.defaultNChar=false -XX:NativeMemoryTracking=detail -Dsun.net.client.defaultConnectTimeout=60000 -Dconfig.server.service=deh -Dconfig.server.url=http://configserver:8080/configserver -Djavax.net.ssl.trustStore=/opt/tomcat/conf/certs/cacerts.jks -Djavax.net.ssl.trustStorePassword=changeit'
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.nodeName
+            - name: NAMESPACE_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: CONTAINER_NAME
+              value: deh
+            - name: SOURCE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: MONOLITHIC_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.podIP
+            - name: HEALTH_CHECK_PROTOCOL
+              value: http
+            - name: HEALTH_CHECK_PORT
+              value: '9090'
+            - name: MONOLITHIC_PORT
+              value: '9090'
+            - name: CONTEXT_NAME
+              value: deh
+            - name: TZ
+              value: Asia/Kolkata
+            - name: APPDYNAMICS_CONTROLLER_SSL_ENABLED
+              value: 'false'
+            - name: APPDYNAMICS_AGENT_ACCOUNT_NAME
+              value: finacle-pnb
+            - name: APPDYNAMICS_AGENT_APPLICATION_NAME
+              value: RETAIL-DC
+            - name: APPDYNAMICS_AGENT_TIER_NAME
+              value: deh
+            - name: APPDYNAMICS_JAVA_AGENT_REUSE_NODE_NAME_PREFIX
+              value: deh
+            - name: JAVA_TOOL_OPTIONS
+              value: ' -Dappdynamics.agent.accountAccessKey=$(APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY) -Dappdynamics.socket.collection.bci.enable=true -Dappdynamics.jvm.shutdown.mark.node.as.historical=false  -Dappdynamics.agent.reuse.nodeName=true -javaagent:/opt/appdynamics-java/javaagent.jar'
+            - name: APPDYNAMICS_CONTROLLER_HOST_NAME
+              value: finasproc1.mypnbone.in
+            - name: APPDYNAMICS_CONTROLLER_PORT
+              value: '7777'
+            - name: APPDYNAMICS_NETVIZ_AGENT_HOST
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.hostIP
+            - name: APPDYNAMICS_NETVIZ_AGENT_PORT
+              value: '0'
+          ports:
+            - name: http
+              containerPort: 9090
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: deh-config-volume
+              mountPath: /opt/tomcat/conf/context.xml
+              subPath: context.xml
+            - name: deh-config-volume
+              mountPath: /opt/tomcat/conf/mtls.sh
+              subPath: mtls.sh
+            - name: deh-config-volume
+              mountPath: /opt/tomcat/conf/server.xml
+              subPath: server.xml
+            - name: deh-config-volume
+              mountPath: /opt/extension/hif/config/Custom_HIF_Host.xml
+              subPath: Custom_HIF_Host.xml
+            - name: deh-config-volume
+              mountPath: /opt/extension/hif/config/Custom_HIF_Message.xml
+              subPath: Custom_HIF_Message.xml
+            - name: deh-config-volume
+              mountPath: /opt/extension/hif/config/EB_HIF.xml
+              subPath: EB_HIF.xml
+            - name: deh-config-volume
+              mountPath: /opt/extension/hif/config/HIF_1113_Host.xml
+              subPath: HIF_1113_Host.xml
+            - name: deh-config-volume
+              mountPath: /opt/extension/hif/config/HIF_1113_Host_bkp_2211.xml
+              subPath: HIF_1113_Host_bkp_2211.xml
+            - name: deh-config-volume
+              mountPath: /opt/extension/hif/config/HIF_1113_Message.xml
+              subPath: HIF_1113_Message.xml
+            - name: deh-secrets-volume
+              mountPath: /opt/tomcat/conf/certs/cacerts.jks
+              subPath: cacerts.jks
+            - name: deh-secrets-volume
+              mountPath: /opt/extension/security/AdapterConfig.xml
+              subPath: AdapterConfig.xml
+            - name: deh-secrets-volume
+              mountPath: /opt/extension/security/AdapterConfig.xml_bcp
+              subPath: AdapterConfig.xml_bcp
+            - name: deh-secrets-volume
+              mountPath: /opt/extension/security/KeysConfig.xml
+              subPath: KeysConfig.xml
+            - name: deh-secrets-volume
+              mountPath: /opt/extension/security/KeysConfig.xml_bck
+              subPath: KeysConfig.xml_bck
+            - name: deh-secrets-volume
+              mountPath: /opt/extension/security/PrivateKey.key
+              subPath: PrivateKey.key
+            - name: deh-secrets-volume
+              mountPath: /opt/extension/security/PublicKey.key
+              subPath: PublicKey.key
+            - name: deh-secrets-volume
+              mountPath: /opt/extension/batch/BatchConfig.xml
+              subPath: BatchConfig.xml
+            - name: deh-secrets-volume
+              mountPath: /opt/extension/batch/BatchConfig.xml_bck
+              subPath: BatchConfig.xml_bck
+            - name: appd-agent-repo-java
+              mountPath: /opt/appdynamics-java
+          terminationMessagePolicy: File
+          image: 'retaildc-registry-quay-quay-enterprise.apps.retaildc.mypnbone.in/pnbprodretail/deh:1116_J17_V9-42'
+      hostAliases:
+        - ip: 10.192.11.153
+          hostnames:
+            - pnbfas.com
+        - ip: 10.192.18.33
+          hostnames:
+            - cbsservice.mypnb.in
+        - ip: 10.192.2.165
+          hostnames:
+            - dc-fin-ssc-gbmapp.pnb.co.in
+        - ip: 10.192.5.145
+          hostnames:
+            - pnbupi.in
+        - ip: 10.192.233.25
+          hostnames:
+            - efrmneoprodapp.pnb.net
+        - ip: 10.192.5.222
+          hostnames:
+            - pnbimps.in
+        - ip: 10.192.20.116
+          hostnames:
+            - pnbapps.mypnb.in
+        - ip: 10.192.35.59
+          hostnames:
+            - pnbfinacledc.pnb.co.in
+        - ip: 10.192.21.162
+          hostnames:
+            - www.pnbcard.in
+        - ip: 10.192.20.101
+          hostnames:
+            - aafiu.mypnb.in
+        - ip: 10.192.11.50
+          hostnames:
+            - depository.pnbindia.in
+      serviceAccount: finacle-sa
+      volumes:
+        - name: deh-config-volume
+          configMap:
+            name: deh-configmap
+            defaultMode: 420
+        - name: deh-secrets-volume
+          secret:
+            secretName: deh-secrets
+            defaultMode: 420
+        - name: data
+          emptyDir: {}
+        - name: appd-agent-repo-java
+          emptyDir: {}
+      dnsPolicy: ClusterFirst
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 50%
+      maxSurge: 50%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+
+
+
+
+
+
+
 GRPC call: /csi.v1.Controller/CreateVolume
 I1128 09:33:34.847215 1 connection.go:194] GRPC request: {"capacity_range":{"required_bytes":1073741824},"name":"pvc-61e0ea4b-382d-4d3f-b35e-b75c05ad4734","parameters":{"connectionType":"fc","poolID":"9","portID":"CL9-C,CLA-C,CLB-C,CLC-C","serialNumber":"50906"},"secrets":"***stripped***","volume_capabilities":[{"AccessType":{"Mount":{"fs_type":"xfs"}},"access_mode":{"mode":1}}]}
 I1128 09:33:34.856195 1 connection.go:200] GRPC response: {}
