@@ -1,3 +1,9 @@
+
+for pod in $(oc get pods -n prod | grep deh | awk '{print $1}'); do
+  echo "=== Checking $pod ==="
+  oc logs $pod -n prod | awk -v p=$pod 'length($0) > 512000 {print p, NR, length($0)/1024, "KB"}'
+done
+====================================================================================
 instance-2kjpj                                  1/1     Running     0          55d    10.130.1.28    retdcmaster3.retaildc.mypnbone.in   <none>           <none>
 instance-fl5dj                                  1/1     Running     0          55d    10.129.0.26    retdcmaster1.retaildc.mypnbone.in   <none>           <none>
 instance-rwsqq                                  1/1     Running     0          55d    10.128.1.131   retdcmaster2.retaildc.mypnbone.in   <none>           <none>
