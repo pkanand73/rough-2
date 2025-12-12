@@ -1,4 +1,6 @@
+[oneadmin@bastion ~]$ ldapsearch -x   -H ldap://pnb.net   -D "pnboneocp@pnb.net"   -w "Maypbiz@2025"   -b "OU=HO-DigitalBankingDivision-51750,OU=HeadOfficeUsers,DC=pnb,DC=net"   "(&(objectClass=user)(memberOf=CN=OCP_MBS,OU=Custom Security Groups,DC=pnb,DC=net))"   sAMAccountName mail
 
+========================================
 for pod in $(oc get pods -n prod | grep deh | awk '{print $1}'); do
   echo "=== Checking $pod ==="
   oc logs $pod -n prod | awk -v p=$pod 'length($0) > 512000 {print p, NR, length($0)/1024, "KB"}'
