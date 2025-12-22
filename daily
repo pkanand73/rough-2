@@ -1,3 +1,66 @@
+#### Commands
+
+To check java properties
+sh-5.1$ java -XshowSettings:properties -version
+
+##### Metric query for loki #####
+
+sum by (tenant, reason) (irate(loki_discarded_samples_total[1m]))
+
+##### Must gather command for logging namespace #####
+oc adm must-gather --image=$(oc -n openshift-logging get deployment.apps/cluster-logging-operator -o jsonpath='{.spec.template.spec.containers[?(@.name == "cluster-logging-operator")].image}')
+
+##### Catalog source command  #####
+oc adm catalog mirror registry.redhat.io/redhat/certified-operator-index:v4.16 ${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} -a ${LOCAL_SECRET_JSON} --filter-by-os="linux/amd64" --manifests-only
+
+oc image mirror -a ${LOCAL_SECRET_JSON} -f quay.txt
+
+'prodregmirr01.retaildr.mypnbone.in:8443/ocp4.16.40/openshift4-redhat-redhat-operator-index:v4.16'
+
+###############################
+##### User add command #####
+
+oc adm policy add-cluster-role-to-user cluster-reader <username>
+
+Corp DC
+oc adm policy add-cluster-role-to-user cluster-reader 5195281
+oc adm policy add-cluster-role-to-user cluster-reader 5202734
+oc adm policy add-cluster-role-to-user cluster-reader 5202689
+
+oc adm policy add-cluster-role-to-user cluster-logging-application-view 5195281
+oc adm policy add-cluster-role-to-user cluster-logging-application-view 5202734
+oc adm policy add-cluster-role-to-user cluster-logging-application-view 5202689
+
+
+retail DC
+oc adm policy add-cluster-role-to-user cluster-reader 5114517
+oc adm policy add-cluster-role-to-user cluster-reader 5224526
+oc adm policy add-cluster-role-to-user cluster-reader 5202734
+
+oc adm policy add-cluster-role-to-user cluster-logging-application-view 5114517
+oc adm policy add-cluster-role-to-user cluster-logging-application-view 5224526
+oc adm policy add-cluster-role-to-user cluster-logging-application-view 5202734
+
+#######################
+##### Lokistack config #####
+spec: 
+  template:
+      queryFrontend:
+        replicas: 3
+      querier:
+        replicas: 4
+#######################
+##### Ldap command #####
+ url: ldap://pnb.net/OU=HO-DigitalBankingDivision-51750,OU=HeadOfficeUsers,DC=pnb,DC=net?sAMAccountName?sub?(&(objectclass=*)(|(memberOf=CN=OCP_MBS_PROD,OU=Custom
+          Security Groups,DC=pnb,DC=net)))
+		  
+ldapsearch -x -H ldap://pnb.net:389 -D "pnboneocp@pnb.net" -W -b "OU=HO-DigitalBankingDivision-51750,OU=HeadOfficeUsers,DC=pnb,DC=net" "(sAMAccountName=5180055)"
+
+ldapsearch -x -H ldap://pnb.net:389 -D "pnboneocp@pnb.net" -W -b "OU=HO-DigitalBankingDivision-51750,OU=HeadOfficeUsers,DC=pnb,DC=net" "(memberOf=CN=OCP_MBS_PROD,OU=Custom Security Groups,DC=pnb,DC=net)" cn
+
+ldapsearch -x -H ldap://pnb.net:389 -D "pnboneocp@pnb.net" -W -b "OU=HO-DigitalBankingDivision-51750,OU=HeadOfficeUsers,DC=pnb,DC=net" "(memberOf=CN=OCP_MBS_PROD,OU=Custom Security Groups,DC=pnb,DC=net)" |grep -i mail
+
+==========================================================================================
 [oneadmin@bastion ~]$ ldapsearch -x   -H ldap://pnb.net   -D "pnboneocp@pnb.net"   -w "Maypbiz@2025"   -b "OU=HO-DigitalBankingDivision-51750,OU=HeadOfficeUsers,DC=pnb,DC=net"   "(&(objectClass=user)(memberOf=CN=OCP_MBS,OU=Custom Security Groups,DC=pnb,DC=net))"   sAMAccountName mail
 
 ========================================
